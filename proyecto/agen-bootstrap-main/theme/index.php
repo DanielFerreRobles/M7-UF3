@@ -107,25 +107,32 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-10 mx-auto text-center">
-        <h2 class="section-title">Our Services</h2>
-        <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat.</p>
-        <div class="section-border"></div>
-      </div>
+      <h2 class="section-title">Our Services</h2>
+      <div class="d-flex justify-content-center">
+      <?php
+require_once 'config.php';
+
+$result = $mysqli->query("SELECT * FROM NEWS ORDER BY id DESC");
+$arrayNews = $result->fetch_all(MYSQLI_ASSOC);
+
+foreach ($arrayNews as $new) {
+  echo "<div class='col-lg-4 col-md-6 mb-4'>";
+  echo "<div class='card h-100'>";
+  echo "<img class='card-img-top' src='{$new['photo']}' alt='Card image cap'>";
+  echo "<div class='card-body'>";
+  echo "<h5 class='card-title'>{$new['title']}</h5>";
+  echo "<h6 class='card-subtitle mb-2 text-muted'>{$new['subtitle']}</h6>";
+  echo "<p class='card-text'>{$new['description']}</p>";
+  echo "</div>";
+  echo "<div class='card-footer'>";
+  echo "<small class='text-muted'>{$new['news_date']}</small>";
+  echo "</div>";
+  echo "</div>";
+  echo "</div>";
+}
+?>
+
     </div>
-    <div class="row">
-      <div class="col-lg-4 mb-4 mb-lg-0">
-        <div class="card hover-bg-secondary shadow py-4 active">
-          <div class="card-body text-center">
-            <div class="position-relative">
-              <i
-                class="icon-lg icon-box bg-gradient-primary rounded-circle ti-palette mb-5 d-inline-block text-white"></i>
-              <i class="icon-lg icon-watermark text-white ti-palette"></i>
-            </div>
-            <h4 class="mb-4">Design</h4>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo</p>
-          </div>
         </div>
       </div>
       <div class="col-lg-4 mb-4 mb-lg-0">
@@ -451,28 +458,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-        <article class="card">
-          <img src="images/blog/post-1.jpg" alt="post-thumb" class="card-img-top mb-2">
-          <div class="card-body p-0">
-            <time>January 15, 2018</time>
-            <a href="blog-single" class="h4 card-title d-block my-3 text-dark hover-text-underline">How These Different
-              Book Covers Reflect the Design</a>
-            <a href="#" class="btn btn-transparent">Read more</a>
-          </div>
-        </article>
-      </div>
-      <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-        <article class="card">
-          <img src="images/blog/post-2.jpg" alt="post-thumb" class="card-img-top mb-2">
-          <div class="card-body p-0">
-            <time>January 15, 2018</time>
-            <a href="blog-single" class="h4 card-title d-block my-3 text-dark hover-text-underline">How These Different
-              Book Covers Reflect the Design</a>
-            <a href="#" class="btn btn-transparent">Read more</a>
-          </div>
-        </article>
-      </div>
+      
       <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
         <article class="card">
           <img src="images/blog/post-3.jpg" alt="post-thumb" class="card-img-top mb-2">
