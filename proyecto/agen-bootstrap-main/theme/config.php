@@ -13,5 +13,4 @@ $mysqli = new mysqli($dbhost, $dbuser, $dbpassword, $dbname);
 if ($mysqli->connect_error) {
     die('Error : ('. $mysqli->connect_error .')');
 }else{
-    echo "Conexión exitosa Ferrer!!";
 }
