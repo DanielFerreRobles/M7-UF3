@@ -49,10 +49,14 @@
     <div class="row">
       <div class="col-12 text-center">
         <h6 class="display-4 text-white">Daniel Ferrer Robles</h6>
-        <h3>Bienvenido <?php echo isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Crack'; ?></h3>
+        <h3>Bienvenido <?php echo isset($_SESSION['user_name']) ? ($_SESSION['user_name']) : 'Crack'; ?></h3>
         
         <?php if (!isset($_SESSION['user_name'])): ?>
           <a href="login.php" class="btn btn-primary mt-3">Iniciar sesión</a>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['user_name'])): ?>
+            <a href="logout.php">Cerrar sesión</a>
         <?php endif; ?>
       </div>
     </div>
@@ -84,7 +88,7 @@
       <div class="d-flex justify-content-center">
       <?php
 require_once 'config.php';
-$result = $mysqli->query("SELECT * FROM NEWS ORDER BY id DESC");
+$result = $mysqli->query("SELECT * FROM NEWS ORDER BY id DESC LIMIT 3");
 $arrayNews = $result->fetch_all(MYSQLI_ASSOC);
 
 foreach ($arrayNews as $new) {
@@ -103,6 +107,7 @@ foreach ($arrayNews as $new) {
   echo "</div>";
 }
 ?>
+<a href="blog.php">Ver todas</a>
 </section>
 
 <section class="section">
