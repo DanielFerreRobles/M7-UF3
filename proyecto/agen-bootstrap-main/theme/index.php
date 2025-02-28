@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 
 <!--
@@ -53,11 +57,12 @@
         
         <?php if (!isset($_SESSION['user_name'])): ?>
           <a href="login.php" class="btn btn-primary mt-3">Iniciar sesión</a>
+          <a href="registro.php" class="btn btn-secondary mt-3">Registrarse</a>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['user_name'])): ?>
-            <a href="logout.php">Cerrar sesión</a>
-        <?php endif; ?>
+            <a href="logout.php" class="btn btn-secondary mt-3">Cerrar sesión</a>
+            <?php endif; ?>
       </div>
     </div>
   </div>

@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $age = $_POST['age']; // Añadir edad
+    $age = $_POST['age']; 
     $rol = 'user';
 
     $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         echo 'Usuario registrado correctamente';
+        
     } else {
         echo 'Error de registro: ' . $stmt->error;
     }
