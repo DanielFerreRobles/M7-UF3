@@ -16,24 +16,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $mysqli->prepare(
         "INSERT INTO USERS (name, email, password, rol, age, photo, data_register) 
         VALUES (?, ?, ?, ?, ?, ?, NOW())"
+
     );
 
     if (!$stmt) {
         die('Error en la preparación: ' . $mysqli->error);
     }
 
-    $stmt->bind_param('ssssis', $name, $email, $passwordHashed, $rol, $photo, $age);
+    $stmt->bind_param('ssssis', $name, $email, $passwordHashed, $rol, $age, $img);
 
     if ($stmt->execute()) {
-        echo 'Usuario registrado correctamente';
-        
+        header('Location: login.php');
+        exit;        
     } else {
         echo 'Error de registro: ' . $stmt->error;
     }
 
     $stmt->close();
-    $mysqli->close();
-}
+    $mysqli->close();}
 ?>
 
 <!DOCTYPE html>
@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="age">Edad:</label><br>
         <input type="number" id="age" name="age" required><br><br>
 
-        <label for="photo">Foto de perfil:</label><br>
-        <input type="varchar" id="photo" name="photo" required><br><br>
+        <label for="photo">Foto de perfil (URL):</label><br>
+        <input type="text" id="photo" name="photo" required><br><br>
 
         <input type="submit" value="Registrarse">
     </form>
