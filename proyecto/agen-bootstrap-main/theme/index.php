@@ -55,6 +55,11 @@ session_start();
         <h6 class="display-4 text-white">Daniel Ferrer Robles</h6>
         <h3>Bienvenido <?php echo isset($_SESSION['user_name']) ? ($_SESSION['user_name'] . ' <img src="' . $_SESSION['user_photo'] . '" alt="Foto de perfil" width="50" height="50" />') : 'Crack'; ?></h3>
         
+        <a href="adminPanel.php" class="btn btn-sm btn-dark shadow-sm">
+            <i class="bi bi-tools"></i> Panel Admin
+        </a>
+
+        
         <?php if (!isset($_SESSION['user_name'])): ?>
           <a href="login.php" class="btn btn-primary mt-3">Iniciar sesión</a>
           <a href="registro.php" class="btn btn-secondary mt-3">Registrarse</a>
@@ -182,7 +187,7 @@ foreach ($arrayNews as $new) {
     <div class="container">
         <div class="row">
             <div class="col-lg-10 mx-auto text-center">
-                <h2 class="section-title">Proyectos (Entrevistas)</h2>
+                <h2 class="section-title">Proyectos</h2>
                 <div class="d-flex justify-content-center">
                     <?php
                     $result = $mysqli->query("SELECT * FROM PROJECTS ORDER BY id DESC");
@@ -197,7 +202,7 @@ foreach ($arrayNews as $new) {
                         echo "<p class='card-text'>{$proyecto['description']}</p>";
                         echo "</div>";
                         echo "<div class='card-footer'>";
-                        echo "<a href='{$proyecto['url']}' target='_blank' class='btn btn-primary'>Ver Entrevista</a>";
+                        echo "<a href='{$proyecto['url']}' target='_blank' class='btn btn-primary'>Ver</a><br>";
                         echo "<small class='text-muted'>Categoría: {$proyecto['categoria']}</small>";
                         echo "</div>";
                         echo "</div>";
