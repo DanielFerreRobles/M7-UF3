@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         echo 'Usuario añadido correctamente!';
+        exit();
     } else {
         echo 'Error al añadir usuario: ' . $stmt->error;
     }

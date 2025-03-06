@@ -16,6 +16,7 @@ $stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
     echo 'Noticia eliminada correctamente!';
+    exit();
 } else {
     echo 'Error al eliminar la noticia: ' . $stmt->error;
 }

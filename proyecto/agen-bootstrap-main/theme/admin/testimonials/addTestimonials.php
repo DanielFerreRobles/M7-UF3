@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
          echo'Testimonio añadido correctamente!';
+         exit();
     } else {
         echo 'Error al añadir testimonio: ' . $stmt->error;
     }

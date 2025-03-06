@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         echo'Proyecto añadido correctamente!';
+        exit();
    } else {
        echo 'Error al añadir proyecto: ' . $stmt->error;
    }

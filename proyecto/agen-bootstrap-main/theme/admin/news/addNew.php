@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         echo 'Noticia añadida correctamente!';
+        exit();
     } else {
         echo 'Error al agregar noticia: ' . $stmt->error;
     }
