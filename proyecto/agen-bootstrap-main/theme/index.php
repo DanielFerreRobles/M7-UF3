@@ -129,8 +129,7 @@ foreach ($arrayNews as $new) {
                     <?php
 
                     $result = $mysqli->query("SELECT * FROM COMENTARIS");
-  
-                        $arrayCommentaris = $result->fetch_all(MYSQLI_ASSOC);
+                    $arrayCommentaris = $result->fetch_all(MYSQLI_ASSOC);
 
                         foreach ($arrayCommentaris as $commentari) {
                             echo "<div class='col-lg-4 col-md-6 mb-4'>";

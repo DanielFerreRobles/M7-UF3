@@ -1,6 +1,5 @@
 <?php
 session_start();
-include 'config.php';
 ?>
 
 <!DOCTYPE html>
@@ -14,23 +13,29 @@ include 'config.php';
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <h2 class="text-center mb-4">🔧 Panel de Administración</h2>
-        <div class="d-flex justify-content-center">
-            <div class="col-md-6 text-center">
-                <a href="admin/users/addUser.php" class="btn btn-primary w-100 mb-2">
-                    <i class="bi bi-person-plus"></i> Añadir Usuario
+        <h1 class="text-center mb-4">🔧 Panel de Administración</h1>
+        <div class="d-flex justify-content-center gap-3 admin-testimonials">
+
+        <a href="admin/users/addUser.php" class="btn btn-primary w-100 mb-2">
+                    <i class="bi bi-person-plus"></i> Gestionar Usuarios
                 </a>
                 <a href="admin/news/addNew.php" class="btn btn-secondary w-100 mb-2">
-                    <i class="bi bi-newspaper"></i> Añadir Noticia
+                    <i class="bi bi-newspaper"></i> Gestionar Noticias
                 </a>
                 <a href="admin/projects/addProjects.php" class="btn btn-success w-100 mb-2">
-                    <i class="bi bi-briefcase"></i> Añadir Proyecto
+                    <i class="bi bi-briefcase"></i> Gestionar Proyectos
                 </a>
                 <a href="admin/testimonials/addTestimonials.php" class="btn btn-warning w-100 mb-2">
-                    <i class="bi bi-chat-left-quote"></i> Añadir Testimonio
-                </a>
-            </div>
+                    <i class="bi bi-chat-left-quote"></i> Gestionar Testimonios
+                </a>            
         </div>
     </div>
 </body>
 </html>
+
+
+
+
+
+
+
