@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param('sssss', $name, $surname, $description, $img, $date);
 
     if ($stmt->execute()) {
-        $_SESSION['success'] = 'Testimonio añadido correctamente!';
+         echo'Testimonio añadido correctamente!';
     } else {
         echo 'Error al añadir testimonio: ' . $stmt->error;
     }

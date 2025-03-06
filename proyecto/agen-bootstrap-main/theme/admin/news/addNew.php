@@ -2,6 +2,10 @@
 session_start();
 include '../../config.php';
 
+// Obtener todas las noticias
+$result = $mysqli->query("SELECT * FROM NEWS ORDER BY id DESC");
+$arrayNews = $result->fetch_all(MYSQLI_ASSOC);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
     $subtitle = $_POST['subtitle'];
@@ -18,15 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param('sssss', $title, $subtitle, $description, $new_date, $photo);
 
     if ($stmt->execute()) {
-        echo 'Notícia añadida correctamente!' ;
-        exit;
+        echo 'Noticia añadida correctamente!';
     } else {
         echo 'Error al agregar noticia: ' . $stmt->error;
     }
 
     $stmt->close();
-    $mysqli->close();
 }
+
+$mysqli->close();
 ?>
 
 <!DOCTYPE html>
@@ -72,6 +76,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
         </div>
+
+        <h2 class="mt-4">Noticias Añadidas</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Subtítulo</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Imagen</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($arrayNews as $new) { ?>
+                <tr>
+                    <td><?php echo $new['id']; ?></td>
+                    <td><?php echo $new['title']; ?></td>
+                    <td><?php echo $new['subtitle']; ?></td>
+                    <td><?php echo $new['description']; ?></td>
+                    <td><?php echo $new['new_date']; ?></td>
+                    <td><img src="<?php echo $new['photo']; ?>" alt="img" width="100"></td>
+                    <td>
+                        <a href="admin/news/editNews.php?id=<?php echo $new['id']; ?>" class="btn btn-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="deleteNews.php?id=<?php echo $new['id']; ?>" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+        </table>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
