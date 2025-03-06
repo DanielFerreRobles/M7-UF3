@@ -4,7 +4,7 @@ include '../../config.php';
 
 $id = $_GET['id'];
 
-$deleteSql = "DELETE FROM TESTIMONIALS WHERE id = ?";
+$deleteSql = "DELETE FROM PROJECTS WHERE id = ?";
 
 $stmt = $mysqli->prepare($deleteSql);
 
@@ -15,14 +15,12 @@ if (!$stmt) {
 $stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
-    echo 'Testimonio eliminado correctamente!';
-    exit();
+echo 'Proyecto eliminado correctamente!';
+exit();
 } else {
-    echo 'Error al eliminar el testinonio: ' . $stmt->error;
+    echo 'Error al eliminar el proyecto: ' . $stmt->error;
 }
 
 $stmt->close();
 $mysqli->close();
-
-exit();
 ?>

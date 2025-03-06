@@ -2,7 +2,6 @@
 session_start();
 include '../../config.php';
 
-// Obtener todas las noticias
 $result = $mysqli->query("SELECT * FROM NEWS ORDER BY id DESC");
 $arrayNews = $result->fetch_all(MYSQLI_ASSOC);
 
