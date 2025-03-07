@@ -55,19 +55,20 @@ session_start();
         <h6 class="display-4 text-white">Daniel Ferrer Robles</h6>
         <h3>Bienvenido <?php echo isset($_SESSION['user_name']) ? ($_SESSION['user_name'] . ' <img src="' . $_SESSION['user_photo'] . '" alt="Foto de perfil" width="50" height="50" />') : 'Crack'; ?></h3>
         
+    <?php if ($_SESSION['user_rol'] == 'admin') : ?>
         <a href="adminPanel.php" class="btn btn-sm btn-dark shadow-sm">
             <i class="bi bi-tools"></i> Panel Admin
         </a>
+    <?php endif; ?>
 
-        
-        <?php if (!isset($_SESSION['user_name'])): ?>
-          <a href="login.php" class="btn btn-primary mt-3">Iniciar sesión</a>
-          <a href="registro.php" class="btn btn-secondary mt-3">Registrarse</a>
-        <?php endif; ?>
+    <?php if (!isset($_SESSION['user_name'])): ?>
+        <a href="login.php" class="btn btn-primary mt-3">Iniciar sesión</a>
+        <a href="registro.php" class="btn btn-secondary mt-3">Registrarse</a>
+    <?php endif; ?>
 
-        <?php if (isset($_SESSION['user_name'])): ?>
-            <a href="logout.php" class="btn btn-secondary mt-3">Cerrar sesión</a>
-            <?php endif; ?>
+    <?php if (isset($_SESSION['user_name'])): ?>
+        <a href="logout.php" class="btn btn-secondary mt-3">Cerrar sesión</a>
+    <?php endif; ?>
       </div>
     </div>
   </div>
