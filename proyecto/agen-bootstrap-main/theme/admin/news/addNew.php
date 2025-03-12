@@ -100,7 +100,7 @@ $mysqli->close();
                     <td><?php echo $new['new_date']; ?></td>
                     <td><img src="<?php echo $new['photo']; ?>" alt="img" width="100"></td>
                     <td>
-                        <a href="admin/news/editNews.php?id=<?php echo $new['id']; ?>" class="btn btn-primary btn-sm">
+                        <a href="editNews.php?id=<?php echo $new['id']; ?>" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                         <a href="deleteNews.php?id=<?php echo $new['id']; ?>" class="btn btn-danger btn-sm">

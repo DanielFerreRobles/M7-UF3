@@ -1,10 +1,10 @@
 <?php
-include '../../config.php';
+include '../../config.php'; 
 
-$id = $_GET['id'];
+$id = $_GET['id']; 
 
 $sql = "SELECT * FROM TESTIMONIALS WHERE id = ?";
-$stmt = $conexion->prepare($sql);
+$stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -18,8 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = $_POST['data'];
 
     $updateSql = "UPDATE TESTIMONIALS SET name = ?, surname = ?, description = ?, imatge = ?, data = ? WHERE id = ?";
+    $updateConsulta = $mysqli->prepare($updateSql);
 
-    $updateConsulta = $conexion->prepare($updateSql);
     $updateConsulta->bind_param("sssssi", $name, $surname, $description, $imatge, $data, $id);
 
     if ($updateConsulta->execute()) {
@@ -75,4 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

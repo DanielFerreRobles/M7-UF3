@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td><img src="<?php echo $user['photo']; ?>" alt="img" width="100"></td>
                     <td><?php echo $user['data_register']; ?></td>
                     <td>
-                        <a href="admin/users/editUser.php?id=<?php echo $user['id']; ?>" class="btn btn-primary btn-sm">
+                        <a href="editUser.php?id=<?php echo $user['id']; ?>" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                         <a href="deleteUser.php?id=<?php echo $user['id']; ?>" class="btn btn-danger btn-sm">

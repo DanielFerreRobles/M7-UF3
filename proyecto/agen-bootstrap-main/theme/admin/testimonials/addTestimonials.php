@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td><?php echo $testimonial['description']; ?></td>
                     <td><img src="<?php echo $testimonial['imatge']; ?>" alt="img" width="100"></td>
                     <td>
-                        <a href="admin/testimonials/editTestimonials.php?id=<?php echo $testimonial['id']; ?>" class="btn btn-primary btn-sm">
+                        <a href="editTestimonials.php?id=<?php echo $testimonial['id']; ?>" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                         <a href="deleteTestimonials.php?id=<?php echo $testimonial['id']; ?>" class="btn btn-danger btn-sm">

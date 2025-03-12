@@ -92,8 +92,8 @@ $mysqli->close();
                     <td><?php echo $project['description']; ?></td>
                     <td><a href="<?php echo $project['url']; ?>" target="_blank">Ver Proyecto</a></td>
                     <td><?php echo $project['categoria']; ?></td>
-                    <td>
-                        <a href="admin/projects/editProject.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
+                    <td>s
+                        <a href="editProject.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                         <a href="deleteProjects.php?id=<?php echo $project['id']; ?>" class="btn btn-danger btn-sm">
