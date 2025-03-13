@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $age = $_POST['age']; 
-    $rol = 'user';
+    $rol = $_POST['rol'];
     $img = $_POST['photo'];
 
     $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $mysqli->prepare(
         "INSERT INTO USERS (name, email, password, rol, age, photo, data_register) 
         VALUES (?, ?, ?, ?, ?, ?, NOW())"
-
     );
 
     if (!$stmt) {
@@ -33,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt->close();
-    $mysqli->close();}
+    $mysqli->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -60,6 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label for="photo">Foto de perfil (URL):</label><br>
         <input type="text" id="photo" name="photo" required><br><br>
+
+        <label for="rol">Rol:</label><br>
+        <select id="rol" name="rol">
+            <option value="user">Usuario</option>
+            <option value="admin">Administrador</option>
+        </select><br><br>
 
         <input type="submit" value="Registrarse">
     </form>
