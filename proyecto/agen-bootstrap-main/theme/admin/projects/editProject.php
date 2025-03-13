@@ -8,10 +8,6 @@ $stmt->bind_param('i', $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result->num_rows === 0) {
-    die("Proyecto no encontrado.");
-}
-
 $project = $result->fetch_assoc(); 
 $stmt->close();
 
