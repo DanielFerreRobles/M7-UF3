@@ -3,7 +3,7 @@ include '../../config.php';
 
 $id = $_GET['id']; 
 
-$sql = "SELECT * FROM USERS WHERE id = ?";
+$sql = "SELECT * FROM users WHERE id = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $age = $_POST['age'];
     $photo = $_POST['photo'];
 
-    $updateSql = "UPDATE USERS SET name = ?, email = ?, password = ?, rol = ?, age = ?, photo = ? WHERE id = ?";
+    $updateSql = "UPDATE users SET name = ?, email = ?, password = ?, rol = ?, age = ?, photo = ? WHERE id = ?";
     $updateConsulta = $mysqli->prepare($updateSql);
 
     $updateConsulta->bind_param("ssssisi", $name, $email, $password, $rol, $age, $photo, $id);

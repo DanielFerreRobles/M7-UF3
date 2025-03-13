@@ -4,7 +4,7 @@ include '../../config.php';
 
 $id = $_GET['id'];
 
-$stmt = $mysqli->prepare("SELECT * FROM NEWS WHERE id = ?");
+$stmt = $mysqli->prepare("SELECT * FROM news WHERE id = ?");
 $stmt->bind_param('i', $id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_date = $_POST['new_date'];
     $photo = $_POST['photo'];
 
-    $updateStmt = $mysqli->prepare("UPDATE NEWS SET title = ?, subtitle = ?, description = ?, new_date = ?, photo = ? WHERE id = ?");
+    $updateStmt = $mysqli->prepare("UPDATE news SET title = ?, subtitle = ?, description = ?, new_date = ?, photo = ? WHERE id = ?");
     $updateStmt->bind_param('sssssi', $title, $subtitle, $description, $new_date, $photo, $id);
 
     if ($updateStmt->execute()) {

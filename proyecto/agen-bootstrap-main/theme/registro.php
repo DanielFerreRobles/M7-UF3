@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = $mysqli->prepare(
-        "INSERT INTO USERS (name, email, password, rol, age, photo, data_register) 
+        "INSERT INTO users (name, email, password, rol, age, photo, data_register) 
         VALUES (?, ?, ?, ?, ?, ?, NOW())"
 
     );

@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $result = $mysqli->query("SELECT * FROM USERS WHERE email = '$email' LIMIT 1");
+    $result = $mysqli->query("SELECT * FROM users WHERE email = '$email' LIMIT 1");
 
     if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();

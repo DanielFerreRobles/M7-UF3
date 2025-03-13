@@ -2,7 +2,7 @@
 session_start();
 include '../../config.php';
 
-$result = $mysqli->query("SELECT * FROM USERS ORDER BY id DESC");
+$result = $mysqli->query("SELECT * FROM users ORDER BY id DESC");
 $arrayUsers = $result->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_register = date('Y-m-d'); 
 
     $stmt = $mysqli->prepare(
-        "INSERT INTO USERS (name, email, password, rol, age, photo, data_register) 
+        "INSERT INTO users (name, email, password, rol, age, photo, data_register) 
         VALUES (?, ?, ?, ?, ?, ?, ?)"
     );
 

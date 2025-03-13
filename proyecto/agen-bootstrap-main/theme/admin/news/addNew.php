@@ -2,7 +2,7 @@
 session_start();
 include '../../config.php';
 
-$result = $mysqli->query("SELECT * FROM NEWS ORDER BY id DESC");
+$result = $mysqli->query("SELECT * FROM news ORDER BY id DESC");
 $arrayNews = $result->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_date = $_POST['new_date'];
     $photo = $_POST['photo'];
 
-    $stmt = $mysqli->prepare("INSERT INTO NEWS (title, subtitle, description, new_date, photo) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO news (title, subtitle, description, new_date, photo) VALUES (?, ?, ?, ?, ?)");
 
     if (!$stmt) {
         die('Error en la preparación: ' . $mysqli->error);
