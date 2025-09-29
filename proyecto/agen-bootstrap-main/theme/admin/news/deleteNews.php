@@ -4,7 +4,7 @@ include '../../config.php';
 
 $id = $_GET['id'];
 
-$deleteSql = "DELETE FROM NEWS WHERE id = ?";
+$deleteSql = "DELETE FROM NOTICIAS WHERE id = ?";
 
 $stmt = $mysqli->prepare($deleteSql);
 

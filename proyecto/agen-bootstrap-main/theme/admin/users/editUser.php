@@ -3,25 +3,24 @@ include '../../config.php';
 
 $id = $_GET['id']; 
 
-$sql = "SELECT * FROM USERS WHERE id = ?";
+$sql = "SELECT * FROM USUARIOS WHERE id = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
-$user = $result->fetch_assoc(); 
+$usuario = $result->fetch_assoc(); 
+$stmt->close();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
+    $nombre_usuario = $_POST['nombre_usuario'];
     $email = $_POST['email'];
     $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : $_POST['old_password'];
     $rol = $_POST['rol'];
-    $age = $_POST['age'];
-    $photo = $_POST['photo'];
 
-    $updateSql = "UPDATE USERS SET name = ?, email = ?, password = ?, rol = ?, age = ?, photo = ? WHERE id = ?";
+    $updateSql = "UPDATE USUARIOS SET nombre_usuario = ?, email = ?, password = ?, rol = ? WHERE id = ?";
     $updateConsulta = $mysqli->prepare($updateSql);
 
-    $updateConsulta->bind_param("ssssisi", $name, $email, $password, $rol, $age, $photo, $id);
+    $updateConsulta->bind_param("ssssi", $nombre_usuario, $email, $password, $rol, $id);
 
     if ($updateConsulta->execute()) {
         echo '<div class="alert alert-success">¡Usuario actualizado correctamente!</div>';
@@ -45,16 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container mt-5">
         <h1>Editar Usuario</h1>
         <form method="POST">
-            <input type="hidden" name="old_password" value="<?php echo $user['password']; ?>">
+            <input type="hidden" name="old_password" value="<?php echo $usuario['password']; ?>">
 
             <div class="mb-3">
-                <label for="name" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="name" name="name" value="<?php echo $user['name']; ?>" required>
+                <label for="nombre_usuario" class="form-label">Nombre de Usuario</label>
+                <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" value="<?php echo $usuario['nombre_usuario']; ?>" required>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" value="<?php echo $user['email']; ?>" required>
+                <input type="email" class="form-control" id="email" name="email" value="<?php echo $usuario['email']; ?>" required>
             </div>
 
             <div class="mb-3">
@@ -66,19 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="rol" class="form-label">Rol</label>
                 <select id="rol" name="rol" class="form-select" required>
-                    <option value="user" <?php echo ($user['rol'] == 'user') ? 'selected' : ''; ?>>Usuario</option>
-                    <option value="admin" <?php echo ($user['rol'] == 'admin') ? 'selected' : ''; ?>>Administrador</option>
+                    <option value="user" <?php echo ($usuario['rol'] == 'user') ? 'selected' : ''; ?>>Usuario</option>
+                    <option value="admin" <?php echo ($usuario['rol'] == 'admin') ? 'selected' : ''; ?>>Administrador</option>
                 </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="age" class="form-label">Edad</label>
-                <input type="number" class="form-control" id="age" name="age" value="<?php echo $user['age']; ?>" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="photo" class="form-label">Foto de Perfil (URL)</label>
-                <input type="url" class="form-control" id="photo" name="photo" value="<?php echo $user['photo']; ?>" required>
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar cambios</button>

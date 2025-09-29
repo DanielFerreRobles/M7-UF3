@@ -2,31 +2,28 @@
 session_start();
 include '../../config.php';
 
-$result = $mysqli->query("SELECT * FROM USERS ORDER BY id DESC");
-$arrayUsers = $result->fetch_all(MYSQLI_ASSOC);
+$result = $mysqli->query("SELECT * FROM USUARIOS ORDER BY id DESC");
+$arrayUsuarios = $result->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
+    $nombre_usuario = $_POST['nombre_usuario'];
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $rol = $_POST['rol'];
-    $age = $_POST['age'];
-    $photo = $_POST['photo'];
-    $data_register = date('Y-m-d'); 
 
     $stmt = $mysqli->prepare(
-        "INSERT INTO USERS (name, email, password, rol, age, photo, data_register) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO USUARIOS (nombre_usuario, email, password, rol) 
+         VALUES (?, ?, ?, ?)"
     );
 
     if (!$stmt) {
         die('Error en la preparación: ' . $mysqli->error);
     }
 
-    $stmt->bind_param('sssssis', $name, $email, $password, $rol, $age, $photo, $data_register);
+    $stmt->bind_param('ssss', $nombre_usuario, $email, $password, $rol);
 
     if ($stmt->execute()) {
-        echo 'Usuario añadido correctamente!';
+        echo '¡Usuario añadido correctamente!';
         exit();
     } else {
         echo 'Error al añadir usuario: ' . $stmt->error;
@@ -51,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="POST">
             <div class="mb-3">
-                <label for="name" class="form-label">Nombre:</label>
-                <input type="text" id="name" name="name" class="form-control" required>
+                <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
+                <input type="text" id="nombre_usuario" name="nombre_usuario" class="form-control" required>
             </div>
 
             <div class="mb-3">
@@ -73,16 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
 
-            <div class="mb-3">
-                <label for="age" class="form-label">Edad:</label>
-                <input type="number" id="age" name="age" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="photo" class="form-label">Foto de perfil (URL):</label>
-                <input type="text" id="photo" name="photo" class="form-control" required>
-            </div>
-
             <button type="submit" class="btn btn-primary">Añadir Usuario</button>
         </form>
 
@@ -91,32 +78,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Edad</th>
+                    <th>Nombre de Usuario</th>
+                    <th>Correo Electrónico</th>
                     <th>Rol</th>
-                    <th>Imagen</th>
-                    <th>Fecha Registro</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($arrayUsers as $user) { ?>
+                <?php foreach ($arrayUsuarios as $usuario) { ?>
                 <tr>
-                    <td><?php echo $user['id']; ?></td>
-                    <td><?php echo $user['name']; ?></td>
-                    <td><?php echo $user['email']; ?></td>
-                    <td><?php echo $user['age']; ?></td>
-                    <td><?php echo $user['rol']; ?></td>
-                    <td><img src="<?php echo $user['photo']; ?>" alt="img" width="100"></td>
-                    <td><?php echo $user['data_register']; ?></td>
+                    <td><?php echo $usuario['id']; ?></td>
+                    <td><?php echo $usuario['nombre_usuario']; ?></td>
+                    <td><?php echo $usuario['email']; ?></td>
+                    <td><?php echo $usuario['rol']; ?></td>
                     <td>
-                        <a href="editUser.php?id=<?php echo $user['id']; ?>" class="btn btn-primary btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a href="deleteUser.php?id=<?php echo $user['id']; ?>" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </a>
+                        <a href="editar_usuario.php?id=<?php echo $usuario['id']; ?>" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="eliminar_usuario.php?id=<?php echo $usuario['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                     </td>
                 </tr>
                 <?php } ?>

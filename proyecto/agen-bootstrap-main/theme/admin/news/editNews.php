@@ -4,23 +4,22 @@ include '../../config.php';
 
 $id = $_GET['id'];
 
-$stmt = $mysqli->prepare("SELECT * FROM NEWS WHERE id = ?");
+$stmt = $mysqli->prepare("SELECT * FROM noticias WHERE id = ?");
 $stmt->bind_param('i', $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$new = $result->fetch_assoc();
+$noticia = $result->fetch_assoc();
 $stmt->close();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $_POST['title'];
-    $subtitle = $_POST['subtitle'];
-    $description = $_POST['description'];
-    $new_date = $_POST['new_date'];
-    $photo = $_POST['photo'];
+    $titulo = $_POST['titulo'];
+    $subtitulo = $_POST['subtitulo'];
+    $contenido = $_POST['contenido'];
+    $fecha_publicacion = $_POST['fecha_publicacion'];
 
-    $updateStmt = $mysqli->prepare("UPDATE NEWS SET title = ?, subtitle = ?, description = ?, new_date = ?, photo = ? WHERE id = ?");
-    $updateStmt->bind_param('sssssi', $title, $subtitle, $description, $new_date, $photo, $id);
+    $updateStmt = $mysqli->prepare("UPDATE noticias SET titulo = ?, subtitulo = ?, contenido = ?, fecha_publicacion = ? WHERE id = ?");
+    $updateStmt->bind_param('ssssi', $titulo, $subtitulo, $contenido, $fecha_publicacion, $id);
 
     if ($updateStmt->execute()) {
         echo '<div class="alert alert-success">¡Noticia actualizada correctamente!</div>';
@@ -51,37 +50,13 @@ $mysqli->close();
                 <form action="" method="POST">
                     <div class="mb-3">
                         <label class="form-label">Título:</label>
-                        <input type="text" name="title" class="form-control" value="<?php echo htmlspecialchars($new['title']); ?>" required>
+                        <input type="text" name="titulo" class="form-control" value="<?php echo htmlspecialchars($noticia['titulo']); ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Subtítulo:</label>
-                        <input type="text" name="subtitle" class="form-control" value="<?php echo htmlspecialchars($new['subtitle']); ?>" required>
+                        <input type="text" name="subtitulo" class="form-control" value="<?php echo htmlspecialchars($noticia['subtitulo']); ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Descripción:</label>
-                        <textarea name="description" class="form-control" rows="4" required><?php echo htmlspecialchars($new['description']); ?></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Fecha:</label>
-                        <input type="date" name="new_date" class="form-control" value="<?php echo $new['new_date']; ?>" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">URL de la Imagen:</label>
-                        <input type="text" name="photo" class="form-control" value="<?php echo htmlspecialchars($new['photo']); ?>" required>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Actualizar Noticia</button>
-                </form>
-            </div>
-        </div>
-
-        <a href="index.php" class="btn btn-secondary mt-3">Volver a la lista de noticias</a>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+                        <label class="form-label">Contenido:</label>

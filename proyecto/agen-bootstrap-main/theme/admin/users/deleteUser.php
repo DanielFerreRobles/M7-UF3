@@ -4,7 +4,7 @@ include '../../config.php';
 
 $id = $_GET['id'];
 
-$deleteSql = "DELETE FROM USERS WHERE id = ?";
+$deleteSql = "DELETE FROM USUARIOS WHERE id = ?";
 
 $stmt = $mysqli->prepare($deleteSql);
 

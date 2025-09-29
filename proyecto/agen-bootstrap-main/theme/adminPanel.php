@@ -21,13 +21,7 @@ session_start();
                 </a>
                 <a href="admin/news/addNew.php" class="btn btn-secondary w-100 mb-2">
                     <i class="bi bi-newspaper"></i> Gestionar Noticias
-                </a>
-                <a href="admin/projects/addProjects.php" class="btn btn-success w-100 mb-2">
-                    <i class="bi bi-briefcase"></i> Gestionar Proyectos
-                </a>
-                <a href="admin/testimonials/addTestimonials.php" class="btn btn-warning w-100 mb-2">
-                    <i class="bi bi-chat-left-quote"></i> Gestionar Testimonios
-                </a>            
+                </a>      
         </div>
     </div>
 </body>

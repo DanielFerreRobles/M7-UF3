@@ -6,26 +6,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $result = $mysqli->query("SELECT * FROM USERS WHERE email = '$email' LIMIT 1");
+    $stmt = $mysqli->prepare("SELECT * FROM USUARIOS WHERE email = ? LIMIT 1");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result && $result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+        $usuario = $result->fetch_assoc();
         
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_email'] = $user['email'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_rol'] = $user['rol'];
-            $_SESSION['user_photo'] = $user['photo'];
+        if (password_verify($password, $usuario['password'])) {
+            $_SESSION['user_id'] = $usuario['id'];
+            $_SESSION['user_email'] = $usuario['email'];
+            $_SESSION['user_name'] = $usuario['nombre_usuario'];
+            $_SESSION['user_rol'] = $usuario['rol'];
 
             header('Location: index.php');
             exit;
         } else {
-            echo 'Contraseña incorrecta';
+            $error = "Contraseña incorrecta";
         }
     } else {
-        echo 'Usuario no encontrado';
+        $error = "Usuario no encontrado";
     }
+
+    $stmt->close();
+    $mysqli->close();
 }
 ?>
 
@@ -35,17 +40,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Iniciar sesión</h1>
-    <form action="" method="POST">
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="mb-4">Iniciar sesión</h1>
 
-        <label for="password">Contraseña:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
+        <?php if (!empty($error)) { ?>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
+        <?php } ?>
 
-        <input type="submit" value="Iniciar sesión">
-    </form>
+        <form action="" method="POST" class="bg-white p-4 shadow rounded">
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+        </form>
+    </div>
 </body>
 </html>

@@ -2,26 +2,25 @@
 session_start();
 include '../../config.php';
 
-$result = $mysqli->query("SELECT * FROM NEWS ORDER BY id DESC");
-$arrayNews = $result->fetch_all(MYSQLI_ASSOC);
+$result = $mysqli->query("SELECT * FROM NOTICIAS ORDER BY ID DESC");
+$arrayNoticias = $result->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $_POST['title'];
-    $subtitle = $_POST['subtitle'];
-    $description = $_POST['description'];
-    $new_date = $_POST['new_date'];
-    $photo = $_POST['photo'];
+    $titulo = $_POST['titulo'];
+    $subtitulo = $_POST['subtitulo'];
+    $contenido = $_POST['contenido'];
+    $fecha_publicacion = $_POST['fecha_publicacion'];
 
-    $stmt = $mysqli->prepare("INSERT INTO NEWS (title, subtitle, description, new_date, photo) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (TITULO, SUBTITULO, CONTENIDO, LIGA_ID, USER_ID, COMPETICION, FECHA_PUBLICACION) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
     if (!$stmt) {
         die('Error en la preparación: ' . $mysqli->error);
     }
 
-    $stmt->bind_param('sssss', $title, $subtitle, $description, $new_date, $photo);
+    $stmt->bind_param('sssisss', $titulo, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion);
 
     if ($stmt->execute()) {
-        echo 'Noticia añadida correctamente!';
+        echo '¡Noticia añadida correctamente!';
         exit();
     } else {
         echo 'Error al agregar noticia: ' . $stmt->error;
@@ -49,27 +48,22 @@ $mysqli->close();
                 <form action="" method="POST">
                     <div class="mb-3">
                         <label class="form-label">Título:</label>
-                        <input type="text" name="title" class="form-control" required>
+                        <input type="text" name="titulo" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Subtítulo:</label>
-                        <input type="text" name="subtitle" class="form-control" required>
+                        <input type="text" name="subtitulo" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Descripción:</label>
-                        <textarea name="description" class="form-control" rows="4" required></textarea>
+                        <label class="form-label">Contenido:</label>
+                        <textarea name="contenido" class="form-control" rows="4" required></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Fecha:</label>
-                        <input type="date" name="new_date" class="form-control" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">URL de la Imagen:</label>
-                        <input type="text" name="photo" class="form-control" required>
+                        <label class="form-label">Fecha de publicación:</label>
+                        <input type="datetime-local" name="fecha_publicacion" class="form-control">
                     </div>
 
                     <button type="submit" class="btn btn-primary">Añadir Noticia</button>
@@ -77,35 +71,31 @@ $mysqli->close();
             </div>
         </div>
 
-        <h2 class="mt-4">Noticias Añadidas</h2>
+        <h2 class="mt-4">Noticias añadidas</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Título</th>
                     <th>Subtítulo</th>
-                    <th>Descripción</th>
+                    <th>Contenido</th>
+                    <th>Competición</th>
                     <th>Fecha</th>
-                    <th>Imagen</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($arrayNews as $new) { ?>
+                <?php foreach ($arrayNoticias as $noticia) { ?>
                 <tr>
-                    <td><?php echo $new['id']; ?></td>
-                    <td><?php echo $new['title']; ?></td>
-                    <td><?php echo $new['subtitle']; ?></td>
-                    <td><?php echo $new['description']; ?></td>
-                    <td><?php echo $new['new_date']; ?></td>
-                    <td><img src="<?php echo $new['photo']; ?>" alt="img" width="100"></td>
+                    <td><?php echo $noticia['id']; ?></td>
+                    <td><?php echo $noticia['titulo']; ?></td>
+                    <td><?php echo $noticia['subtitulo']; ?></td>
+                    <td><?php echo $noticia['contenido']; ?></td>
+                    <td><?php echo $noticia['competicion']; ?></td>
+                    <td><?php echo $noticia['fecha_publicacion']; ?></td>
                     <td>
-                        <a href="editNews.php?id=<?php echo $new['id']; ?>" class="btn btn-primary btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a href="deleteNews.php?id=<?php echo $new['id']; ?>" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </a>
+                        <a href="editNews.php?id=<?php echo $noticia['id']; ?>" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="deleteNews.php?id=<?php echo $noticia['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                     </td>
                 </tr>
                 <?php } ?>
