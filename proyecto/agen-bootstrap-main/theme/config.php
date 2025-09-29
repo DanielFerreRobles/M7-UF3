@@ -1,8 +1,8 @@
 <?php
 // Conexión a la base de datos
-$dbhost = 'mysql-ferrer.alwaysdata.net';
-$dbname = 'ferrer_proyecto_uf3';
-$dbuser = 'ferrer';
+$dbhost = 'mysql-aprende-con-ferrer.alwaysdata.net';
+$dbname = 'aprende-con-ferrer_proyectom12';
+$dbuser = '397287';
 $dbpassword = 'maluc656';
 
 
