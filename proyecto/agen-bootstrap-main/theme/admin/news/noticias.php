@@ -54,8 +54,8 @@ $mysqli->close();
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title"><?php echo htmlspecialchars($noticia['titulo']); ?></h5>
                         <p class="card-text"><?php echo htmlspecialchars($noticia['subtitulo']); ?></p>
+                        <p class="card-text"><?php echo htmlspecialchars($noticia['contenido']); ?></p>
                         <p class="text-muted mt-auto"><?php echo date('d/m/Y H:i', strtotime($noticia['fecha_publicacion'])); ?></p>
-                        <a href="verNoticia.php?id=<?php echo $noticia['id']; ?>" class="btn btn-primary mt-2">Leer más</a>
                     </div>
                 </div>
             </div>
