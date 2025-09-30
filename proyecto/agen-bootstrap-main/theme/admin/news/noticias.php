@@ -33,7 +33,24 @@ $stmt->execute();
 $result = $stmt->get_result();
 $noticias = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
-$mysqli->close();
+
+// Procesar nuevo comentario
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contenido']) && isset($_POST['noticia_id']) && isset($_SESSION['user_id'])) {
+    $contenido = $_POST['contenido'];
+    $noticia_id = $_POST['noticia_id'];
+    $usuario_id = $_SESSION['user_id'];
+
+    $stmtComInsert = $mysqli->prepare("INSERT INTO COMENTARIOS (noticia_id, usuario_id, contenido, fecha_comentario) VALUES (?, ?, ?, NOW())");
+    if ($stmtComInsert) {
+        $stmtComInsert->bind_param("iis", $noticia_id, $usuario_id, $contenido);
+        $stmtComInsert->execute();
+        $stmtComInsert->close();
+        header("Location: noticias.php?liga_id=".$liga_id);
+        exit();
+    } else {
+        echo "<p>Error insertando comentario: ".$mysqli->error."</p>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -71,6 +88,48 @@ $mysqli->close();
                     <h5 class="card-subtitle mb-3 text-muted"><?php echo htmlspecialchars($noticia['subtitulo']); ?></h5>
                     <p class="card-text"><?php echo nl2br(htmlspecialchars($noticia['contenido'])); ?></p>
                     <p class="text-muted">Publicado el <?php echo date('d/m/Y H:i', strtotime($noticia['fecha_publicacion'])); ?></p>
+
+                    <!-- Mostrar comentarios -->
+                    <div class="mt-3">
+                        <h6>Comentarios:</h6>
+                        <?php
+                        $stmtCom = $mysqli->prepare("SELECT C.contenido, C.fecha_comentario, U.nombre_usuario 
+                                                     FROM COMENTARIOS C 
+                                                     JOIN USUARIOS U ON C.usuario_id = U.id 
+                                                     WHERE C.noticia_id = ? 
+                                                     ORDER BY C.fecha_comentario ASC");
+                        $comentarios = [];
+                        if ($stmtCom) {
+                            $stmtCom->bind_param("i", $noticia['id']);
+                            $stmtCom->execute();
+                            $resultCom = $stmtCom->get_result();
+                            $comentarios = $resultCom->fetch_all(MYSQLI_ASSOC);
+                            $stmtCom->close();
+                        }
+                        if (!empty($comentarios)):
+                            foreach ($comentarios as $com):
+                        ?>
+                        <p><strong><?php echo htmlspecialchars($com['nombre_usuario']); ?>:</strong> <?php echo nl2br(htmlspecialchars($com['contenido'])); ?> <small class="text-muted">(<?php echo date('d/m/Y H:i', strtotime($com['fecha_comentario'])); ?>)</small></p>
+                        <?php
+                            endforeach;
+                        else:
+                            echo "<p class='text-muted'>No hay comentarios aún.</p>";
+                        endif;
+                        ?>
+
+                        <!-- Formulario para nuevo comentario -->
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                        <form action="" method="POST" class="mt-2">
+                            <input type="hidden" name="noticia_id" value="<?php echo $noticia['id']; ?>">
+                            <div class="mb-2">
+                                <textarea name="contenido" class="form-control" rows="2" placeholder="Escribe un comentario..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
+                        </form>
+                        <?php else: ?>
+                            <p class="text-muted">Inicia sesión para comentar.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
