@@ -34,12 +34,12 @@ session_start();
                         Seleccionar Liga
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="noticias.php?liga_id=1">La Liga (España)</a></li>
-                        <li><a class="dropdown-item" href="noticias.php?liga_id=2">Premier League</a></li>
-                        <li><a class="dropdown-item" href="noticias.php?liga_id=3">Serie A</a></li>
-                        <li><a class="dropdown-item" href="noticias.php?liga_id=4">Bundesliga</a></li>
-                        <li><a class="dropdown-item" href="noticias.php?liga_id=5">Ligue 1</a></li>
-                        <li><a class="dropdown-item" href="noticias.php?liga_id=6">Champions League</a></li>
+                        <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=1">La Liga (España)</a></li>
+                        <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=2">Premier League</a></li>
+                        <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=3">Serie A</a></li>
+                        <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=4">Bundesliga</a></li>
+                        <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=5">Ligue 1</a></li>
+                        <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=6">Champions League</a></li>
                     </ul>
                 </div>
 
