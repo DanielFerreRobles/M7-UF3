@@ -92,8 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td><?php echo $usuario['email']; ?></td>
                     <td><?php echo $usuario['rol']; ?></td>
                     <td>
-                        <a href="editar_usuario.php?id=<?php echo $usuario['id']; ?>" class="btn btn-primary btn-sm">Editar</a>
-                        <a href="eliminar_usuario.php?id=<?php echo $usuario['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                        <a href="editUser.php?id=<?php echo $usuario['id']; ?>" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="deleteUser.php?id=<?php echo $usuario['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                     </td>
                 </tr>
                 <?php } ?>
