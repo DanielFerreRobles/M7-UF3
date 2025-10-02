@@ -1,35 +1,50 @@
 <?php
+// ===============================
+// 1. INICIO DE SESIÓN Y CONEXIÓN
+// ===============================
 session_start();
-include '../../config.php';
+include '../../config.php';  // Incluye conexión a la base de datos
 
+// ===============================
+// 2. OBTENER TODAS LAS NOTICIAS
+// ===============================
 $result = $mysqli->query("SELECT * FROM NOTICIAS ORDER BY id DESC");
 $arrayNoticias = $result->fetch_all(MYSQLI_ASSOC);
 
-// Obtener ligas para el select
+// ===============================
+// 3. OBTENER TODAS LAS LIGAS PARA EL SELECT
+// ===============================
 $ligasResult = $mysqli->query("SELECT id, nombre FROM LIGAS");
 $ligas = $ligasResult->fetch_all(MYSQLI_ASSOC);
 
+// ===============================
+// 4. PROCESAR FORMULARIO DE AÑADIR NOTICIA
+// ===============================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Recoger datos del formulario
     $titulo = $_POST['titulo'];
-    $foto = $_POST['foto']; // nuevo campo
+    $foto = $_POST['foto']; // URL de la foto
     $subtitulo = $_POST['subtitulo'];
     $contenido = $_POST['contenido'];
     $liga_id = $_POST['liga_id'];
-    $user_id = $_SESSION['user_id'] ?? 1;
+    $user_id = $_SESSION['user_id'] ?? 1; // Si no hay sesión, usar 1 como default
     $competicion = $_POST['competicion'] ?? 'N/A';
     $fecha_publicacion = $_POST['fecha_publicacion'];
 
+    // Preparar sentencia SQL para insertar noticia
     $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
     if (!$stmt) {
         die('Error en la preparación: ' . $mysqli->error);
     }
 
+    // Vincular parámetros
     $stmt->bind_param('ssssisss', $titulo, $foto, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion);
 
+    // Ejecutar y mostrar mensaje según resultado
     if ($stmt->execute()) {
         echo '<div class="alert alert-success">¡Noticia añadida correctamente!</div>';
-        header("Refresh:1");
+        header("Refresh:1"); // Refresca la página para ver la noticia añadida
     } else {
         echo '<div class="alert alert-danger">Error al agregar noticia: ' . $stmt->error . '</div>';
     }
@@ -37,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 
+// Cerrar conexión al final
 $mysqli->close();
 ?>
 
@@ -50,6 +66,7 @@ $mysqli->close();
 </head>
 <body class="bg-light">
 <div class="container mt-5">
+    <!-- FORMULARIO PARA AÑADIR NOTICIA -->
     <div class="card">
         <div class="card-body">
             <h2>Añadir Noticia</h2>
@@ -99,6 +116,7 @@ $mysqli->close();
         </div>
     </div>
 
+    <!-- TABLA DE NOTICIAS EXISTENTES -->
     <h2 class="mt-4">Noticias añadidas</h2>
     <table class="table table-striped">
         <thead>
@@ -135,6 +153,7 @@ $mysqli->close();
     </table>
 </div>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
