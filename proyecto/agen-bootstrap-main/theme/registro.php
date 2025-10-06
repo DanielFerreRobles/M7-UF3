@@ -1,6 +1,8 @@
 <?php
 session_start();
-include 'config.php'; // Conexión a MySQL
+include 'config.php'; // Conexión a MySQL usando $mysqli
+
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre_usuario'];
@@ -10,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insertar usuario directamente
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $conn->prepare("INSERT INTO USUARIOS (nombre_usuario, email, password, rol) VALUES (?, ?, ?, ?)");
+
+    $stmt = $mysqli->prepare("INSERT INTO USUARIOS (nombre_usuario, email, password, rol) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $nombre, $email, $hashed_password, $rol);
 
     if ($stmt->execute()) {

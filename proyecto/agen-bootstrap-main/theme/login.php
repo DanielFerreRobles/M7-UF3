@@ -1,35 +1,32 @@
 <?php
 session_start();
-include 'config.php'; // Conexión a MySQL
+include 'config.php'; // Ajusta la ruta si login.php está en la raíz
 
+$error = '';
+
+// Procesar formulario POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Buscar usuario por email
-    $stmt = $conn->prepare("SELECT id, nombre_usuario, password, rol FROM USUARIOS WHERE email=?");
+    // Preparar consulta segura
+    $stmt = $mysqli->prepare("SELECT * FROM USUARIOS WHERE email=?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
-    $resultado = $stmt->get_result();
+    $result = $stmt->get_result();
+    $usuario = $result->fetch_assoc();
+    $stmt->close();
 
-    if ($resultado->num_rows === 1) {
-        $usuario = $resultado->fetch_assoc();
+    // Verificar contraseña usando password_verify()
+    if ($usuario && password_verify($password, $usuario['password'])) {
+        $_SESSION['user_id'] = $usuario['id'];
+        $_SESSION['user_name'] = $usuario['nombre_usuario'];
+        $_SESSION['user_rol'] = $usuario['rol'];
 
-        // Verificar contraseña
-        if (password_verify($password, $usuario['password'])) {
-            // Guardar info en sesión
-            $_SESSION['usuario_id'] = $usuario['id'];
-            $_SESSION['user_name'] = $usuario['nombre_usuario'];
-            $_SESSION['user_rol'] = $usuario['rol'];
-
-            // Redirigir a index.php
-            header("Location: index.php");
-            exit;
-        } else {
-            $error = "Contraseña incorrecta.";
-        }
+        header("Location: index.php"); // Redirigir al index principal
+        exit;
     } else {
-        $error = "Usuario no encontrado.";
+        $error = "Email o contraseña incorrectos";
     }
 }
 ?>
@@ -37,41 +34,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Enganchados Por El Fútbol</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Enganchados Por El Fútbol</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-dark text-white">
+<body class="bg-light">
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
-        <h2 class="mb-4 text-center">Iniciar Sesión</h2>
+<div class="container d-flex justify-content-center align-items-center" style="height:100vh;">
+    <div class="card p-4" style="width: 100%; max-width: 400px;">
+        <h2 class="text-center mb-4">Iniciar Sesión</h2>
 
-        <?php if (!empty($error)): ?>
+        <?php if ($error): ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
 
         <form method="POST">
             <div class="mb-3">
-                <label for="email" class="form-label text-dark">Email</label>
-                <input type="email" class="form-control" name="email" id="email" required>
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" name="email" id="email" class="form-control" required>
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label text-dark">Contraseña</label>
-                <input type="password" class="form-control" name="password" id="password" required>
+                <label for="password" class="form-label">Contraseña:</label>
+                <input type="password" name="password" id="password" class="form-control" required>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
         </form>
 
-        <p class="mt-3 text-center text-dark">
-            ¿No tienes cuenta? <a href="registro.php">Regístrate</a>
-        </p>
+        <p class="text-center mt-3">¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a></p>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

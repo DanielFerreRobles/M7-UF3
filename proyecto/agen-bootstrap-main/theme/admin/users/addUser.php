@@ -1,12 +1,6 @@
 <?php
 session_start();
-include 'config.php'; // Conexión a MySQL usando $mysqli
-
-// Solo permitir acceso si el usuario es admin
-if (!isset($_SESSION['usuario_id']) || $_SESSION['user_rol'] !== 'admin') {
-    header("Location: login.php");
-    exit;
-}
+include '../../config.php'; // Conexión a MySQL usando $mysqli
 
 // Procesar formulario para agregar usuario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

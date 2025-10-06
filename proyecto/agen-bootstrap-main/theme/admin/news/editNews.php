@@ -1,12 +1,6 @@
 <?php
 session_start();
-include '../config.php'; // Configuración de la base de datos
-
-// Solo admins pueden acceder
-if (!isset($_SESSION['usuario_id']) || $_SESSION['user_rol'] !== 'admin') {
-    header("Location: ../login.php");
-    exit;
-}
+include '../../config.php'; // Configuración de la base de datos
 
 // Verificar que se haya pasado el id de la noticia
 if (!isset($_GET['id'])) {

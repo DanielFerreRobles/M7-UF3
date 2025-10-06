@@ -1,18 +1,19 @@
 <?php
 session_start();
-include '../config.php'; // Configuración de la base de datos, un nivel hacia arriba
+include '../../config.php'; // Ajusta según tu estructura de carpetas
 
-// Solo admins pueden acceder
-if (!isset($_SESSION['usuario_id']) || $_SESSION['user_rol'] !== 'admin') {
-    header("Location: ../login.php");
-    exit;
+// Verificar sesión
+if (!isset($_SESSION['user_id'])) {
+    die("Debes iniciar sesión antes de añadir noticias.");
 }
 
 // Traer ligas
-$ligas = $mysqli->query("SELECT id, nombre FROM LIGAS")->fetch_all(MYSQLI_ASSOC);
+$result = $mysqli->query("SELECT id, nombre FROM LIGAS");
+$ligas = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
 // Traer noticias existentes
-$noticias = $mysqli->query("SELECT * FROM NOTICIAS ORDER BY id DESC")->fetch_all(MYSQLI_ASSOC);
+$resultNoticias = $mysqli->query("SELECT * FROM NOTICIAS ORDER BY id DESC");
+$noticias = $resultNoticias ? $resultNoticias->fetch_all(MYSQLI_ASSOC) : [];
 
 // Procesar formulario POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,15 +24,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $liga_id = $_POST['liga_id'];
     $competicion = $_POST['competicion'] ?? '';
     $fecha_publicacion = $_POST['fecha_publicacion'] ?: date('Y-m-d H:i:s');
-    $user_id = $_SESSION['usuario_id'];
+    $user_id = $_SESSION['user_id']; // 🔹 Corregido
 
-    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssisss", $titulo, $foto, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion);
-    $stmt->execute();
-    $stmt->close();
-
-    header("Location: addNew.php");
-    exit;
+    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    if ($stmt) {
+        $stmt->bind_param("ssssisss", $titulo, $foto, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion);
+        $ok = $stmt->execute();
+        if ($ok) {
+            header("Location: addNew.php");
+            exit;
+        } else {
+            echo "<div class='alert alert-danger'>Error al insertar la noticia: " . $stmt->error . "</div>";
+        }
+        $stmt->close();
+    } else {
+        echo "<div class='alert alert-danger'>Error en la preparación de la consulta: " . $mysqli->error . "</div>";
+    }
 }
 ?>
 
@@ -53,12 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="text" name="foto" class="form-control mb-2" placeholder="URL de la imagen" required>
     <input type="text" name="subtitulo" class="form-control mb-2" placeholder="Subtítulo" required>
     <textarea name="contenido" class="form-control mb-2" placeholder="Contenido" rows="4" required></textarea>
+    
     <select name="liga_id" class="form-select mb-2" required>
         <option value="">Selecciona una liga</option>
         <?php foreach ($ligas as $liga): ?>
             <option value="<?php echo $liga['id']; ?>"><?php echo htmlspecialchars($liga['nombre']); ?></option>
         <?php endforeach; ?>
     </select>
+
     <input type="text" name="competicion" class="form-control mb-2" placeholder="Competición">
     <input type="datetime-local" name="fecha_publicacion" class="form-control mb-2">
     <button type="submit" class="btn btn-primary">Añadir Noticia</button>

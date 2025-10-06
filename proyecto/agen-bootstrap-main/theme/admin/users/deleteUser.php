@@ -1,12 +1,6 @@
 <?php
 session_start();
-include 'config.php'; // Conexión usando $mysqli
-
-// Solo admins pueden acceder
-if (!isset($_SESSION['usuario_id']) || $_SESSION['user_rol'] !== 'admin') {
-    header("Location: login.php");
-    exit;
-}
+include '../../config.php'; // Conexión a MySQL usando $mysqli
 
 // Verificar que se pase el id del usuario
 if (!isset($_GET['id'])) {
