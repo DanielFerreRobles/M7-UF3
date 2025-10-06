@@ -1,141 +1,113 @@
 <?php
 session_start();
-include '../../config.php'; // Conexión a la base de datos
+include 'config.php'; // Conexión usando $mysqli
 
-// ================================
-// 1️⃣ OBTENER ID DEL USUARIO A EDITAR
-// ================================
+// Solo admins pueden acceder
+if (!isset($_SESSION['usuario_id']) || $_SESSION['user_rol'] !== 'admin') {
+    header("Location: login.php");
+    exit;
+}
+
+// Obtener id del usuario a editar
 if (!isset($_GET['id'])) {
-    die("Error: no se ha especificado un ID de usuario.");
+    header("Location: addUser.php");
+    exit;
 }
-$id = intval($_GET['id']); // Convertimos a número por seguridad
 
-// ================================
-// 2️⃣ CONSULTAR DATOS ACTUALES DEL USUARIO
-// ================================
-$stmt = $mysqli->prepare("SELECT * FROM USUARIOS WHERE id = ?");
-$stmt->bind_param("i", $id);
+$usuario_id = $_GET['id'];
+
+// Traer datos actuales del usuario
+$stmt = $mysqli->prepare("SELECT nombre_usuario, email, rol FROM USUARIOS WHERE id=?");
+$stmt->bind_param("i", $usuario_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$usuario = $result->fetch_assoc();
+$resultado = $stmt->get_result();
 
-if (!$usuario) {
-    die("Error: usuario no encontrado.");
+if ($resultado->num_rows !== 1) {
+    header("Location: addUser.php");
+    exit;
 }
-$stmt->close();
 
-// ================================
-// 3️⃣ PROCESAR FORMULARIO DE ACTUALIZACIÓN
-// ================================
+$usuario = $resultado->fetch_assoc();
+
+// Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre_usuario = trim($_POST['nombre_usuario']);
-    $email = trim($_POST['email']);
+    $nombre = $_POST['nombre_usuario'];
+    $email = $_POST['email'];
     $rol = $_POST['rol'];
-    $password = $_POST['password']; // Puede venir vacío
+    $password = $_POST['password'];
 
-    // ==========================
-    // 3.1️⃣ Si se cambia la contraseña → encriptar
-    // ==========================
     if (!empty($password)) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        // Actualizar con nueva contraseña
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $mysqli->prepare("UPDATE USUARIOS SET nombre_usuario=?, email=?, password=?, rol=? WHERE id=?");
+        $stmt->bind_param("ssssi", $nombre, $email, $hashed_password, $rol, $usuario_id);
     } else {
-        $hashedPassword = $usuario['password']; // mantener la actual
+        // Actualizar sin cambiar contraseña
+        $stmt = $mysqli->prepare("UPDATE USUARIOS SET nombre_usuario=?, email=?, rol=? WHERE id=?");
+        $stmt->bind_param("sssi", $nombre, $email, $rol, $usuario_id);
     }
 
-    // ==========================
-    // 3.2️⃣ Actualizar los datos
-    // ==========================
-    $updateStmt = $mysqli->prepare("UPDATE USUARIOS SET nombre_usuario = ?, email = ?, password = ?, rol = ? WHERE id = ?");
-    $updateStmt->bind_param("ssssi", $nombre_usuario, $email, $hashedPassword, $rol, $id);
-
-    if ($updateStmt->execute()) {
-        echo '<div class="alert alert-success text-center mt-3">✅ ¡Usuario actualizado correctamente!</div>';
-        // Actualizar variable $usuario para mostrar los nuevos datos sin recargar manualmente
-        $usuario['nombre_usuario'] = $nombre_usuario;
+    if ($stmt->execute()) {
+        $success = "Usuario actualizado correctamente.";
+        $usuario['nombre_usuario'] = $nombre;
         $usuario['email'] = $email;
         $usuario['rol'] = $rol;
-        $usuario['password'] = $hashedPassword;
     } else {
-        echo '<div class="alert alert-danger text-center mt-3">❌ Error al actualizar el usuario: ' . $updateStmt->error . '</div>';
+        $error = "Error al actualizar usuario.";
     }
-
-    $updateStmt->close();
 }
-
-$mysqli->close();
 ?>
 
-<!-- ================================
- 4️⃣ HTML — FORMULARIO DE EDICIÓN
-================================ -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Usuario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Editar Usuario - Panel Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-body">
-            <h2 class="mb-4">✏️ Editar Usuario</h2>
+<div class="container my-5">
+    <h2 class="mb-4">Editar Usuario</h2>
 
-            <form method="POST">
-                <!-- Campo nombre -->
-                <div class="mb-3">
-                    <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
-                    <input 
-                        type="text" 
-                        id="nombre_usuario" 
-                        name="nombre_usuario" 
-                        class="form-control" 
-                        value="<?php echo htmlspecialchars($usuario['nombre_usuario']); ?>" 
-                        required>
-                </div>
+    <?php if (!empty($error)): ?>
+        <div class="alert alert-danger"><?php echo $error; ?></div>
+    <?php endif; ?>
 
-                <!-- Campo email -->
-                <div class="mb-3">
-                    <label for="email" class="form-label">Correo Electrónico:</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        class="form-control" 
-                        value="<?php echo htmlspecialchars($usuario['email']); ?>" 
-                        required>
-                </div>
+    <?php if (!empty($success)): ?>
+        <div class="alert alert-success"><?php echo $success; ?></div>
+    <?php endif; ?>
 
-                <!-- Campo contraseña -->
-                <div class="mb-3">
-                    <label for="password" class="form-label">Nueva Contraseña (opcional):</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        class="form-control" 
-                        placeholder="Deja vacío para mantener la actual">
-                </div>
-
-                <!-- Campo rol -->
-                <div class="mb-3">
-                    <label for="rol" class="form-label">Rol:</label>
-                    <select id="rol" name="rol" class="form-select" required>
-                        <option value="user" <?php echo ($usuario['rol'] === 'user') ? 'selected' : ''; ?>>Usuario</option>
-                        <option value="admin" <?php echo ($usuario['rol'] === 'admin') ? 'selected' : ''; ?>>Administrador</option>
-                    </select>
-                </div>
-
-                <!-- Botón -->
-                <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
-            </form>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="nombre_usuario" class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" value="<?php echo htmlspecialchars($usuario['nombre_usuario']); ?>" required>
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" id="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar)</label>
+            <input type="password" class="form-control" name="password" id="password">
+        </div>
+
+        <div class="mb-3">
+            <label for="rol" class="form-label">Rol</label>
+            <select class="form-select" name="rol" id="rol" required>
+                <option value="usuario" <?php if($usuario['rol'] === 'usuario') echo 'selected'; ?>>Usuario</option>
+                <option value="admin" <?php if($usuario['rol'] === 'admin') echo 'selected'; ?>>Administrador</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
+        <a href="addUser.php" class="btn btn-secondary">Volver a Usuarios</a>
+    </form>
 </div>
 
-<!-- Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

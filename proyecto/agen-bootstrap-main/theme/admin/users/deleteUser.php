@@ -1,42 +1,34 @@
 <?php
 session_start();
-include '../../config.php'; // Conexión a la base de datos
+include 'config.php'; // Conexión usando $mysqli
 
-// ================================
-// 1️⃣ Obtener ID del usuario a eliminar
-// ================================
+// Solo admins pueden acceder
+if (!isset($_SESSION['usuario_id']) || $_SESSION['user_rol'] !== 'admin') {
+    header("Location: login.php");
+    exit;
+}
+
+// Verificar que se pase el id del usuario
 if (!isset($_GET['id'])) {
-    die("Error: no se ha especificado un ID de usuario.");
-}
-$id = intval($_GET['id']); // Convertir a entero por seguridad
-
-// ================================
-// 2️⃣ Preparar la consulta DELETE
-// ================================
-$deleteSql = "DELETE FROM USUARIOS WHERE id = ?";
-$stmt = $mysqli->prepare($deleteSql);
-
-if (!$stmt) {
-    die('Error en la preparación de la consulta: ' . $mysqli->error);
+    header("Location: addUser.php");
+    exit;
 }
 
-// Vincular parámetro (id del usuario)
-$stmt->bind_param("i", $id);
+$usuario_id = $_GET['id'];
 
-// ================================
-// 3️⃣ Ejecutar la eliminación
-// ================================
-if ($stmt->execute()) {
-    // Éxito: mostrar mensaje y opcionalmente redirigir
-    echo '<div class="alert alert-success text-center mt-3">✅ Usuario eliminado correctamente</div>';
-} else {
-    // Error al eliminar
-    echo '<div class="alert alert-danger text-center mt-3">❌ Error al eliminar el usuario: ' . $stmt->error . '</div>';
+// Evitar que un admin se borre a sí mismo
+if ($usuario_id == $_SESSION['usuario_id']) {
+    header("Location: addUser.php");
+    exit;
 }
 
-// ================================
-// 4️⃣ Cerrar statement y conexión
-// ================================
-$stmt->close();
-$mysqli->close();
+// Ejecutar eliminación
+$stmt = $mysqli->prepare("DELETE FROM USUARIOS WHERE id=?");
+$stmt->bind_param("i", $usuario_id);
+
+$stmt->execute();
+
+// Redirigir de vuelta al listado
+header("Location: addUser.php");
+exit;
 ?>
