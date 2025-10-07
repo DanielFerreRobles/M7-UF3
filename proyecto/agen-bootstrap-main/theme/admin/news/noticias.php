@@ -1,14 +1,16 @@
 <?php
 session_start();
-include '../../config.php'; // ✅ Corregido: 3 niveles hacia arriba desde theme/admin/news/
+include '../../config.php'; // Ajusta según tu estructura
 
 // Validar liga_id
 if (!isset($_GET['liga_id'])) {
-    header("Location: ../../../index.php");
+    header("Location: /../../index.php");
     exit;
 }
+$liga_id = (int)$_GET['liga_id'];
 
-$liga_id = $_GET['liga_id'];
+// Jornada seleccionada
+$jornada = isset($_GET['jornada']) ? (int)$_GET['jornada'] : 1;
 
 // Traer info de la liga
 $stmtLiga = $mysqli->prepare("SELECT nombre, foto FROM LIGAS WHERE id=?");
@@ -19,15 +21,9 @@ $liga = $resultLiga->fetch_assoc();
 $stmtLiga->close();
 if (!$liga) die("Liga no encontrada");
 
-// Traer noticias de la liga
-$stmtNoticias = $mysqli->prepare("
-    SELECT n.*, u.nombre_usuario AS autor 
-    FROM NOTICIAS n 
-    JOIN USUARIOS u ON n.user_id=u.id 
-    WHERE n.liga_id=? 
-    ORDER BY n.id DESC
-");
-$stmtNoticias->bind_param("i", $liga_id);
+// Traer noticias de la liga y jornada
+$stmtNoticias = $mysqli->prepare("SELECT n.*, u.nombre_usuario AS autor FROM NOTICIAS n JOIN USUARIOS u ON n.user_id=u.id WHERE n.liga_id=? AND n.jornada=? ORDER BY n.id DESC");
+$stmtNoticias->bind_param("ii", $liga_id, $jornada);
 $stmtNoticias->execute();
 $resultNoticias = $stmtNoticias->get_result();
 $noticias = $resultNoticias->fetch_all(MYSQLI_ASSOC);
@@ -38,7 +34,7 @@ if (!$noticias) $noticias = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'], $_POST['noticia_id'])) {
     $contenido = $_POST['comentario'];
     $noticia_id = $_POST['noticia_id'];
-    $usuario_id = $_SESSION['user_id'] ?? 1; // default 1 si no hay sesión
+    $usuario_id = $_SESSION['user_id'] ?? 1;
     $fecha_comentario = date('Y-m-d H:i:s');
 
     $stmt = $mysqli->prepare("
@@ -49,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'], $_POST[
     $stmt->execute();
     $stmt->close();
 
-    header("Location: noticias.php?liga_id=$liga_id");
+    header("Location: noticias.php?liga_id=$liga_id&jornada=$jornada");
     exit;
 }
 ?>
@@ -69,16 +65,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'], $_POST[
     <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"></div>
 
     <div class="container position-relative py-5 text-white" style="z-index: 1; overflow-y: auto; max-height: 100vh;">
-        <h1 class="text-center mb-5"><?php echo htmlspecialchars($liga['nombre']); ?></h1>
+        <h1 class="text-center mb-4"><?php echo htmlspecialchars($liga['nombre']); ?></h1>
+
+        <!-- Selector de jornada -->
+        <form method="GET" class="mb-4 d-flex align-items-center gap-2">
+            <input type="hidden" name="liga_id" value="<?php echo $liga_id; ?>">
+            <label for="jornada" class="form-label mb-0">Jornada:</label>
+            <select name="jornada" id="jornada" class="form-select w-auto">
+                <?php for ($i=1; $i<=38; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i==$jornada) echo 'selected'; ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+        </form>
 
         <?php if (count($noticias) > 0): ?>
             <?php foreach ($noticias as $noticia): ?>
             <div class="card mb-4">
-                <!-- ✅ Mostrar imagen de la noticia -->
                 <?php if (!empty($noticia['foto'])): ?>
                     <img src="<?php echo htmlspecialchars($noticia['foto']); ?>" class="card-img-top" alt="Imagen noticia" style="object-fit: cover; max-height: 300px;">
                 <?php endif; ?>
-
                 <div class="card-body text-dark">
                     <h3><?php echo htmlspecialchars($noticia['titulo']); ?></h3>
                     <h5 class="text-muted"><?php echo htmlspecialchars($noticia['subtitulo']); ?></h5>
@@ -97,13 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'], $_POST[
 
                     <!-- Comentarios existentes -->
                     <?php
-                    $stmtComentarios = $mysqli->prepare("
-                        SELECT c.*, u.nombre_usuario 
-                        FROM COMENTARIOS c 
-                        JOIN USUARIOS u ON c.usuario_id=u.id 
-                        WHERE c.noticia_id=? 
-                        ORDER BY c.id ASC
-                    ");
+                    $stmtComentarios = $mysqli->prepare("SELECT c.*, u.nombre_usuario FROM COMENTARIOS c JOIN USUARIOS u ON c.usuario_id=u.id WHERE c.noticia_id=? ORDER BY c.id ASC");
                     $stmtComentarios->bind_param("i", $noticia['id']);
                     $stmtComentarios->execute();
                     $resultComentarios = $stmtComentarios->get_result();
@@ -127,10 +127,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'], $_POST[
             </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <div class="alert alert-info text-dark">No hay noticias disponibles para esta liga.</div>
+            <div class="alert alert-info text-dark">No hay noticias disponibles para esta liga y jornada.</div>
         <?php endif; ?>
 
-        <a href="../../../index.php" class="btn btn-secondary">Volver</a>
+        <a href="../../index.php" class="btn btn-secondary">Volver</a>
     </div>
 </div>
 

@@ -17,14 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subtitulo = $_POST['subtitulo'];
     $contenido = $_POST['contenido'];
     $liga_id = $_POST['liga_id'];
+    $jornada = $_POST['jornada']; // nueva
     $competicion = $_POST['competicion'] ?? '';
     $fecha_publicacion = $_POST['fecha_publicacion'] ?: date('Y-m-d H:i:s');
-    $user_id = $_SESSION['user_id']; // 🔹 Corregido
+    $user_id = $_SESSION['user_id']; // corregido
 
-    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion, jornada) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if ($stmt) {
-        $stmt->bind_param("ssssisss", $titulo, $foto, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion);
+        $stmt->bind_param("ssssisssi", $titulo, $foto, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion, $jornada);
         $ok = $stmt->execute();
         if ($ok) {
             header("Location: addNew.php");
@@ -65,6 +66,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endforeach; ?>
     </select>
 
+    <!-- Selector de jornada -->
+    <select name="jornada" class="form-select mb-2" required>
+        <option value="">Selecciona la jornada</option>
+        <?php for ($i = 1; $i <= 38; $i++): ?>
+            <option value="<?php echo $i; ?>">Jornada <?php echo $i; ?></option>
+        <?php endfor; ?>
+    </select>
+
     <input type="text" name="competicion" class="form-control mb-2" placeholder="Competición">
     <input type="datetime-local" name="fecha_publicacion" class="form-control mb-2">
     <button type="submit" class="btn btn-primary">Añadir Noticia</button>
@@ -81,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <th>Contenido</th>
             <th>Competición</th>
             <th>Liga</th>
+            <th>Jornada</th>
             <th>Fecha</th>
             <th>Acciones</th>
         </tr>
@@ -95,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <td><?php echo htmlspecialchars($noticia['contenido']); ?></td>
             <td><?php echo htmlspecialchars($noticia['competicion']); ?></td>
             <td><?php echo $noticia['liga_id']; ?></td>
+            <td><?php echo $noticia['jornada']; ?></td>
             <td><?php echo $noticia['fecha_publicacion']; ?></td>
             <td>
                 <a href="editNews.php?id=<?php echo $noticia['id']; ?>" class="btn btn-sm btn-warning">Editar</a>

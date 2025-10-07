@@ -73,7 +73,6 @@ $usuarios = $result->fetch_all(MYSQLI_ASSOC);
         </div>
 
         <button type="submit" class="btn btn-primary">Agregar Usuario</button>
-        <a href="adminPanel.php" class="btn btn-secondary">Volver al Panel</a>
     </form>
 
     <!-- Tabla de usuarios existentes -->
