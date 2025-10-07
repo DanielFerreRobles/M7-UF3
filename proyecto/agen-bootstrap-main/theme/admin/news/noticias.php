@@ -88,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'], $_POST[
                 <div class="card-body text-dark">
                     <h3><?php echo htmlspecialchars($noticia['titulo']); ?></h3>
                     <h5 class="text-muted"><?php echo htmlspecialchars($noticia['subtitulo']); ?></h5>
-                    <p><strong>Competición:</strong> <?php echo htmlspecialchars($noticia['competicion']); ?></p>
                     <p><?php echo nl2br(htmlspecialchars($noticia['contenido'])); ?></p>
                     <p class="text-muted small">Publicado por <?php echo htmlspecialchars($noticia['autor']); ?> el <?php echo $noticia['fecha_publicacion']; ?></p>
 
