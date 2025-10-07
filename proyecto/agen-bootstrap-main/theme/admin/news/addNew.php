@@ -2,11 +2,6 @@
 session_start();
 include '../../config.php'; // Ajusta según tu estructura de carpetas
 
-// Verificar sesión
-if (!isset($_SESSION['user_id'])) {
-    die("Debes iniciar sesión antes de añadir noticias.");
-}
-
 // Traer ligas
 $result = $mysqli->query("SELECT id, nombre FROM LIGAS");
 $ligas = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
@@ -102,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <td><?php echo $noticia['liga_id']; ?></td>
             <td><?php echo $noticia['fecha_publicacion']; ?></td>
             <td>
-                <a href="editNew.php?id=<?php echo $noticia['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
-                <a href="deleteNew.php?id=<?php echo $noticia['id']; ?>" class="btn btn-sm btn-danger">Eliminar</a>
+                <a href="editNews.php?id=<?php echo $noticia['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
+                <a href="deleteNews.php?id=<?php echo $noticia['id']; ?>" class="btn btn-sm btn-danger">Eliminar</a>
             </td>
         </tr>
         <?php endforeach; ?>
