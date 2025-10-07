@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'], $_POST[
             <?php foreach ($noticias as $noticia): ?>
             <div class="card mb-4">
                 <?php if (!empty($noticia['foto'])): ?>
-                    <img src="<?php echo htmlspecialchars($noticia['foto']); ?>" class="card-img-top" alt="Imagen noticia" style="object-fit: cover; max-height: 300px;">
+                    <img src="<?php echo htmlspecialchars($noticia['foto']); ?>" class="img-fluid rounded" alt="Imagen noticia">
                 <?php endif; ?>
                 <div class="card-body text-dark">
                     <h3><?php echo htmlspecialchars($noticia['titulo']); ?></h3>
