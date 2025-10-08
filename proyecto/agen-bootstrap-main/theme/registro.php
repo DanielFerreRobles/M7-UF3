@@ -1,21 +1,24 @@
 <?php
 session_start();
-include 'config.php'; // Conexión a MySQL usando $mysqli
+include 'config.php'; // Conexión a mi base de datos MySQL usando $mysqli
 
-$error = '';
+$error = ''; //Por si hay error
 
+//Si los datos han sido correctamente enviados por POST, los guardamos en variables
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre_usuario'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $rol = $_POST['rol'];
 
-    // Insertar usuario directamente
+    // Hasheamos la contraseña
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
+    // Inserto los datos recibidos del formulario en mi tabla "USUARIOS"
     $stmt = $mysqli->prepare("INSERT INTO USUARIOS (nombre_usuario, email, password, rol) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $nombre, $email, $hashed_password, $rol);
 
+    //Si la consulta de INSERT INTO se ejecuta correctamente, redirije a login.php (para iniciar sesión, sino, da error)
     if ($stmt->execute()) {
         header("Location: login.php");
         exit;
@@ -39,10 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
         <h2 class="mb-4 text-center">Registro</h2>
 
+        <!--Si hay un error al registrarse, el mensaje se mostrará rojo-->
         <?php if (!empty($error)): ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
 
+        <!--Enviamos por POST el nombre de usuario, email, contraseña y si es admin o user. Estos datos se reciben arriba y hacemos el INSERT INTO !-->
         <form method="POST">
             <div class="mb-3">
                 <label for="nombre_usuario" class="form-label text-dark">Nombre de usuario</label>
@@ -67,10 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="admin">Administrador</option>
                 </select>
             </div>
-
             <button type="submit" class="btn btn-primary w-100">Registrarse</button>
         </form>
 
+        <!--Si clica aquí le llevará a login.php para que inicie sesión-->
         <p class="mt-3 text-center text-dark">
             ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
         </p>

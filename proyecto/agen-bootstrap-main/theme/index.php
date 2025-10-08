@@ -1,6 +1,5 @@
 <?php
-// Inicia o reanuda la sesión del usuario
-// Esto es necesario para acceder a la información de la sesión, como si el usuario está logueado o no
+// Inicia la sesión del usuario
 session_start();
 ?>
 
@@ -10,7 +9,6 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enganchados Por El Futbol</title>
-    <!-- Incluye Bootstrap desde CDN para estilos modernos y responsivos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="position-relative">
@@ -18,7 +16,7 @@ session_start();
 <!-- Sección principal que ocupa toda la pantalla -->
 <section class="position-relative text-center text-white" style="height: 100vh; overflow: hidden;">
 
-    <!-- Imagen de fondo que ocupa toda la sección -->
+    <!-- Imagen de fondo que ocupa toda la sección (IMG de fondo) -->
     <img src="https://img2.wallspic.com/attachments/originals/2/5/6/8/3/138652-balon_de_futbol-juego_de_pelota-jugador_de_futbol-los_deportes_de_equipo-el_deporte_lugar-4200x2800.jpg" 
          class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" 
          alt="Balón de fútbol sobre césped">
@@ -32,12 +30,14 @@ session_start();
         <?php if (!isset($_SESSION['user_id'])): ?>
             <!-- Si el usuario NO está logueado, se muestra este bloque -->
 
-            <!-- Mensaje invitando a registrarse o iniciar sesión -->
+            <!-- Mensaje para los no logueados a registrarse o iniciar sesión -->
             <p class="lead mb-4">¡Regístrate o inicia sesión para no perderte nada!</p>
 
             <!-- Botones para ir a registro o login -->
             <div class="d-flex gap-3">
+                <!-- Este le llevará a la página de registro (para registrarse) -->
                 <a href="registro.php" class="btn btn-light text-dark btn-lg">Registro</a>
+                <!-- Este le llevará a la página de inicio de sesión (para iniciar sesión) -->
                 <a href="login.php" class="btn btn-light text-dark btn-lg">Iniciar Sesión</a>
             </div>
 
@@ -45,7 +45,7 @@ session_start();
             <!-- Si el usuario SÍ está logueado, se muestra este bloque -->
 
             <!-- Mensaje de bienvenida con el nombre del usuario -->
-            <p class="lead mb-4">Hola, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</p>
+            <p class="lead mb-4">Hola, <?php echo $_SESSION['user_name']; ?>!</p>
 
             <!-- Contenedor de botones y menú desplegable -->
             <div class="d-flex flex-column flex-md-row gap-3 mb-3 justify-content-center align-items-center">
@@ -57,7 +57,7 @@ session_start();
                         Seleccionar Liga
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark">
-                        <!-- Cada liga tiene un enlace que pasa su ID por GET -->
+                        <!-- Cada liga tiene un enlace que pasa su ID por GET a noticias.php -->
                         <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=1">La Liga (España)</a></li>
                         <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=2">Premier League</a></li>
                         <li><a class="dropdown-item" href="admin/news/noticias.php?liga_id=3">Serie A</a></li>
@@ -80,7 +80,6 @@ session_start();
     </div>
 </section>
 
-<!-- Script de Bootstrap necesario para los menús desplegables y componentes interactivos -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
