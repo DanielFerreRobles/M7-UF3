@@ -1,18 +1,22 @@
 <?php
 session_start();
-include '../../config.php'; // Conexión a MySQL usando $mysqli
+include '../../config.php'; // Conexión a la base de datos
 
-// Procesar formulario para agregar usuario
+//Si los datos han sido correctamente recibidos por POST, los guardamos en variables
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre_usuario'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $rol = $_POST['rol'];
 
+    //Hashemos la contraseña
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Inserto los datos recibidos del formulario en mi tabla "USUARIOS"
     $stmt = $mysqli->prepare("INSERT INTO USUARIOS (nombre_usuario, email, password, rol) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $nombre, $email, $hashed_password, $rol);
 
+    //Si la consulta de INSERT INTO se ejecuta correctamente, dará un mensaje de éxito, sino, dará error
     if ($stmt->execute()) {
         $success = "Usuario agregado correctamente.";
     } else {
@@ -20,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Traer todos los usuarios como array
+// Obtenemos la info de nuestra tabla "USUARIOS" ordenada ascendentemente y convertimos la info en array para sacarla por pantalla
 $result = $mysqli->query("SELECT * FROM USUARIOS ORDER BY id ASC");
 $usuarios = $result->fetch_all(MYSQLI_ASSOC);
 ?>
@@ -37,16 +41,17 @@ $usuarios = $result->fetch_all(MYSQLI_ASSOC);
 
 <div class="container my-5">
     <h2 class="mb-4">Agregar Usuario</h2>
-
+    <!--Si hay error se mostrará en rojo-->
     <?php if (!empty($error)): ?>
         <div class="alert alert-danger"><?php echo $error; ?></div>
     <?php endif; ?>
 
+    <!--Si hay éxito al añadir el usuario, se mostrará en verde-->
     <?php if (!empty($success)): ?>
         <div class="alert alert-success"><?php echo $success; ?></div>
     <?php endif; ?>
 
-    <!-- Formulario para agregar usuario -->
+        <!--Enviamos por POST el nombre de usuario, email, contraseña y rol. Estos datos se reciben arriba y hacemos el INSERT INTO !-->
     <form method="POST" class="mb-5">
         <div class="mb-3">
             <label for="nombre_usuario" class="form-label">Nombre de usuario</label>
@@ -91,11 +96,14 @@ $usuarios = $result->fetch_all(MYSQLI_ASSOC);
             <?php foreach ($usuarios as $user): ?>
                 <tr>
                     <td><?php echo $user['id']; ?></td>
-                    <td><?php echo htmlspecialchars($user['nombre_usuario']); ?></td>
-                    <td><?php echo htmlspecialchars($user['email']); ?></td>
+                    <td><?php echo $user['nombre_usuario']; ?></td>
+                    <td><?php echo $user['email']; ?></td>
                     <td><?php echo $user['rol']; ?></td>
                     <td>
+                        <!--Si queremos editar un usuario, clicando aquí nos llevará a poder editarlo, pasandole el id del usuario correspondiente !-->
                         <a href="editUser.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
+                        
+                        <!--Si queremos eliminar un usuario, clicando aquí nos llevará a poder eliminarlo, pasandole el id del usuario correspondiente !-->
                         <a href="deleteUser.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">Eliminar</a>
                     </td>
                 </tr>

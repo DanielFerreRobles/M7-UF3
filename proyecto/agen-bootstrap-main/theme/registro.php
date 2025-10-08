@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'config.php'; // Conexión a mi base de datos MySQL usando $mysqli
+include 'config.php'; // Conexión a mi base de datos
 
 $error = ''; //Por si hay error
 

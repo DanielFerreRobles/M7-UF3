@@ -1,6 +1,5 @@
 <?php
-// Inicia o continúa la sesión
-// Esto permite acceder a información de la sesión, como si el usuario está logueado o su rol
+// Inicia la sesión
 session_start();
 ?>
 
@@ -10,11 +9,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración</title>
-
-    <!-- Bootstrap CSS para estilos modernos y responsivos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons para usar iconos en los botones -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">

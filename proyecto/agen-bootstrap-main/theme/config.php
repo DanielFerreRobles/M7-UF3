@@ -1,27 +1,18 @@
 <?php
-// ================================
-// Configuración de conexión a la base de datos
-// ================================
-$dbhost     = 'mysql-aprende-con-ferrer.alwaysdata.net';                // Host del servidor MySQL
-$dbname     = 'aprende-con-ferrer_proyectom12';            // Nombre de la base de datos
-$dbuser     = '397287';                                     // Usuario de la base de datos
-$dbpassword = 'maluc656';                                   // Contraseña de la base de datos
+// Datos para conectar con la base de datos
+$dbhost     = 'mysql-aprende-con-ferrer.alwaysdata.net';  // Servidor
+$dbname     = 'aprende-con-ferrer_proyectom12';           // Nombre de la base de datos
+$dbuser     = '397287';                                   // Usuario
+$dbpassword = 'maluc656';                                 // Contraseña
 
-// ================================
-// Crear conexión usando mysqli
-// ================================
+// Conectamos con la base de datos
 $mysqli = new mysqli($dbhost, $dbuser, $dbpassword, $dbname);
 
-// ================================
-// Verificar errores de conexión
-// ================================
+// Si hay un error al conectar, se muestra y se detiene el programa
 if ($mysqli->connect_error) {
-    die('Error de conexión (' . $mysqli->connect_errno . '): ' . $mysqli->connect_error);
+    die('Error de conexión: ' . $mysqli->connect_error);
 }
 
-// ================================
-// Establecer codificación a UTF-8
-// Esto asegura que acentos y caracteres especiales se manejen correctamente
-// ================================
+// Ponemos el juego de caracteres en UTF-8 para que se vean bien las tildes y ñ
 $mysqli->set_charset("utf8");
 ?>
