@@ -2,7 +2,7 @@
 session_start();
 include '../../config.php'; // Conexión a la base de datos
 
-// Si NO recibimos id de liga, SI podremos ver las noticias correspondientes
+// Si NO recibimos id de liga, NO podremos ver las noticias correspondientes
 if (!isset($_GET['liga_id'])) {
     header("Location: /../../index.php");
     exit;
@@ -11,28 +11,28 @@ if (!isset($_GET['liga_id'])) {
 // Si recibimos id de liga, SI podremos ver las noticias correspondientes
 $liga_id = $_GET['liga_id'];
 
-//Si recibimos correctamente el número de la jornada que quiere ver el usuario la guardamos en una variable llamada "jornada"
+// Si recibimos correctamente el número de la jornada que quiere ver el usuario, la guardamos en una variable llamada "jornada"
 if (isset($_POST['jornada'])) {
     $jornada = $_POST['jornada'];
 } else {
-    $jornada = 1; //Por defecto (al entrar a ver las noticias) el usuario verá las de la jornada 1
+    $jornada = 1; // Por defecto (al entrar a ver las noticias) el usuario verá las de la jornada 1
 }
 
-//Si recibimos correctamente el comentario y el id de la noticia, guardamos esta info en variables
+// Si recibimos correctamente el comentario y el id de la noticia, guardamos esta info en variables
 if (isset($_POST['comentario'], $_POST['noticia_id'])) {
     $contenido = $_POST['comentario'];
     $noticia_id = $_POST['noticia_id'];
     $usuario_id = $_SESSION['user_id'];
     $fecha_comentario = date('Y-m-d H:i:s');
 
-    //Introducimos en la tabla "COMENTARIOS" la info que hemos recibido del formulario
+    // Introducimos en la tabla "COMENTARIOS" la info que hemos recibido del formulario
     $stmt = $mysqli->prepare("INSERT INTO COMENTARIOS (noticia_id, usuario_id, contenido, fecha_comentario) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("iiss", $noticia_id, $usuario_id, $contenido, $fecha_comentario);
     $stmt->execute();
     $stmt->close();
 
     // Recargar para no duplicar comentario
-    header("Location: noticias.php"); 
+    header("Location: noticias.php?liga_id=$liga_id");
     exit;
 }
 
@@ -44,7 +44,7 @@ $resultLiga = $stmtLiga->get_result();
 $liga = $resultLiga->fetch_assoc();
 $stmtLiga->close();
 
-//Juntando las tablas "NOTICIAS" y "USUARIOS",para obtener todas las noticias de la liga y jornada seleccionadas junto con el nombre del usuario que escribió cada noticia
+// Juntando las tablas "NOTICIAS" y "USUARIOS", para obtener todas las noticias de la liga y jornada seleccionadas junto con el nombre del usuario que escribió cada noticia
 $stmtNoticias = $mysqli->prepare("SELECT NOTICIAS.id, NOTICIAS.titulo, NOTICIAS.subtitulo, NOTICIAS.contenido, NOTICIAS.foto, NOTICIAS.fecha_publicacion, USUARIOS.nombre_usuario 
     FROM NOTICIAS JOIN USUARIOS
     ON NOTICIAS.user_id = USUARIOS.id 
@@ -56,7 +56,7 @@ $resultNoticias = $stmtNoticias->get_result();
 $noticias = $resultNoticias->fetch_all(MYSQLI_ASSOC);
 $stmtNoticias->close();
 
- // Si no hay noticias, ponemos array vacío
+// Si no hay noticias, ponemos array vacío
 if (!$noticias) {
     $noticias = [];
 }
@@ -72,14 +72,12 @@ if (!$noticias) {
 <body>
 
 <!-- Fondo de la liga -->
-<div class="position-relative vh-100" 
-     style="background-image: url('<?php echo $liga['foto']; ?>'); background-size: cover; background-position: center;">
-    
+<div class="position-relative vh-100" style="background-image: url('<?php echo $liga['foto']; ?>'); background-size: cover; background-position: center;">
+
     <!-- Capa oscura encima del fondo -->
     <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"></div>
 
-    <div class="container position-relative py-5 text-white" 
-         style="z-index: 1; overflow-y: auto; max-height: 100vh;">
+    <div class="container position-relative py-5 text-white" style="z-index: 1; overflow-y: auto; max-height: 100vh;">
 
         <!-- Nombre de la liga -->
         <h1 class="text-center mb-4"><?php echo $liga['nombre']; ?></h1>
@@ -90,15 +88,13 @@ if (!$noticias) {
             <label for="jornada" class="form-label mb-0">Jornada:</label>
             <select name="jornada" id="jornada" class="form-select w-auto">
                 <?php for ($i = 1; $i <= 38; $i++): ?>
-                    <option value="<?php echo $i; ?>" <?php if ($i == $jornada) echo 'selected'; ?>>
-                        <?php echo $i; ?>
-                    </option>
+                    <option value="<?php echo $i; ?>" <?php if ($i == $jornada) echo 'selected'; ?>><?php echo $i; ?></option>
                 <?php endfor; ?>
             </select>
             <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
         </form>
 
-        <!--Mostramos las noticias -->
+        <!-- Mostramos las noticias -->
         <?php foreach ($noticias as $noticia): ?>
             <div class="card mb-4">
 
@@ -127,7 +123,21 @@ if (!$noticias) {
                         <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                     </form>
 
-                    <!-- Mostramos los comentarios, quien los ha escrito y cuando -->
+                    <!-- Obtenemos los comentarios de esta noticia -->
+                    <?php
+                    $stmtComentarios = $mysqli->prepare("SELECT COMENTARIOS.contenido, COMENTARIOS.fecha_comentario, USUARIOS.nombre_usuario
+                        FROM COMENTARIOS JOIN USUARIOS
+                        ON COMENTARIOS.usuario_id = USUARIOS.id
+                        WHERE COMENTARIOS.noticia_id = ?
+                        ORDER BY COMENTARIOS.id ASC");
+                    $stmtComentarios->bind_param("i", $noticia['id']);
+                    $stmtComentarios->execute();
+                    $resultComentarios = $stmtComentarios->get_result();
+                    $comentarios = $resultComentarios->fetch_all(MYSQLI_ASSOC) ?: []; // Si no hay comentarios, array vacío
+                    $stmtComentarios->close();
+                    ?>
+
+                    <!-- Mostramos los comentarios -->
                     <?php foreach ($comentarios as $comentario): ?>
                         <div class="border p-2 mb-2 rounded bg-light text-dark">
                             <strong><?php echo $comentario['nombre_usuario']; ?></strong>
@@ -135,6 +145,7 @@ if (!$noticias) {
                             <p class="mb-0"><?php echo $comentario['contenido']; ?></p>
                         </div>
                     <?php endforeach; ?>
+
                 </div>
             </div>
         <?php endforeach; ?>
@@ -144,7 +155,7 @@ if (!$noticias) {
             <div class="alert alert-info text-dark">No hay noticias disponibles.</div>
         <?php endif; ?>
 
-        <!-- Por si nos equivocamos, clicando aqií volveremos a la página prinicipal para seleccionar una liga -->
+        <!-- Botón para volver por si nos equivocamos -->
         <a href="../../index.php" class="btn btn-secondary">Volver</a>
     </div>
 </div>
