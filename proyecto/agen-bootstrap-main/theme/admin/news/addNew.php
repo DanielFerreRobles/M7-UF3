@@ -1,41 +1,52 @@
 <?php
 session_start();
-include '../../config.php'; // Ajusta según tu estructura de carpetas
+include '../../config.php'; // Conexión a mi base de datos
 
-// Traer ligas
+//Obtenemos el id y el nombre de las ligas
 $result = $mysqli->query("SELECT id, nombre FROM LIGAS");
+
+//Si obtenemos resultados del SELECT, lo convertimos en un array y lo guardamos en la variable "ligas", sino, el array estará vacío
 $ligas = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
-// Traer noticias existentes
+// Obtenemos las noticias existentes
 $resultNoticias = $mysqli->query("SELECT * FROM NOTICIAS ORDER BY id DESC");
+
+//Si obtenemos resultados del SELECT, lo convertimos en un array y lo guardamos en la variable "noticias", sino, el array estará vacío
 $noticias = $resultNoticias ? $resultNoticias->fetch_all(MYSQLI_ASSOC) : [];
 
-// Procesar formulario POST
+//Si los datos han sido correctamente recibidos por POST, los guardamos en variables
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = $_POST['titulo'];
     $foto = $_POST['foto'];
     $subtitulo = $_POST['subtitulo'];
     $contenido = $_POST['contenido'];
     $liga_id = $_POST['liga_id'];
-    $jornada = $_POST['jornada']; // nueva
+    $jornada = $_POST['jornada'];
     $competicion = $_POST['competicion'] ?? '';
     $fecha_publicacion = $_POST['fecha_publicacion'] ?: date('Y-m-d H:i:s');
-    $user_id = $_SESSION['user_id']; // corregido
+    $user_id = $_SESSION['user_id'];
 
-    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion, jornada) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // Inserto los datos recibidos del formulario en mi tabla "NOTICIAS"
+    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    
+    // Si la consulta se preparó bien
     if ($stmt) {
+        // Inserto la info de mis variables en la consulta
         $stmt->bind_param("ssssisssi", $titulo, $foto, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion, $jornada);
-        $ok = $stmt->execute();
-        if ($ok) {
+        
+        // Ejecuto la consulta
+        if ($stmt->execute()) {
+            // Si todo va bien, recargo la página
             header("Location: addNew.php");
             exit;
         } else {
-            echo "<div class='alert alert-danger'>Error al insertar la noticia: " . $stmt->error . "</div>";
+            // Si hay error al ejecutar, lo muestro
+            echo "Error al insertar la noticia.";
         }
-        $stmt->close();
+        $stmt->close(); // Cierro la consulta
     } else {
-        echo "<div class='alert alert-danger'>Error en la preparación de la consulta: " . $mysqli->error . "</div>";
+        // Si falla la preparación de la consulta, muestro error
+        echo "Error en la consulta.";
     }
 }
 ?>
@@ -53,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <h1 class="mb-4">Añadir Noticia</h1>
 
+<!--Enviamos por POST la info del formulario. Estos datos se reciben arriba y hacemos el INSERT INTO !-->
 <form method="POST" class="mb-5">
     <input type="text" name="titulo" class="form-control mb-2" placeholder="Título" required>
     <input type="text" name="foto" class="form-control mb-2" placeholder="URL de la imagen" required>
@@ -62,11 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <select name="liga_id" class="form-select mb-2" required>
         <option value="">Selecciona una liga</option>
         <?php foreach ($ligas as $liga): ?>
-            <option value="<?php echo $liga['id']; ?>"><?php echo htmlspecialchars($liga['nombre']); ?></option>
+            <option value="<?php echo $liga['id']; ?>"><?php echo $liga['nombre']; ?></option>
         <?php endforeach; ?>
     </select>
 
-    <!-- Selector de jornada -->
     <select name="jornada" class="form-select mb-2" required>
         <option value="">Selecciona la jornada</option>
         <?php for ($i = 1; $i <= 38; $i++): ?>
@@ -79,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="submit" class="btn btn-primary">Añadir Noticia</button>
 </form>
 
+<!--Mostramos las noticias existentes por pantalla-->
 <h2>Noticias existentes</h2>
 <table class="table table-striped">
     <thead>
@@ -99,16 +111,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php foreach ($noticias as $noticia): ?>
         <tr>
             <td><?php echo $noticia['id']; ?></td>
-            <td><?php echo htmlspecialchars($noticia['titulo']); ?></td>
+            <td><?php echo $noticia['titulo']; ?></td>
             <td><img src="<?php echo $noticia['foto']; ?>" width="80"></td>
-            <td><?php echo htmlspecialchars($noticia['subtitulo']); ?></td>
-            <td><?php echo htmlspecialchars($noticia['contenido']); ?></td>
-            <td><?php echo htmlspecialchars($noticia['competicion']); ?></td>
+            <td><?php echo $noticia['subtitulo']; ?></td>
+            <td><?php echo $noticia['contenido']; ?></td>
+            <td><?php echo $noticia['competicion']; ?></td>
             <td><?php echo $noticia['liga_id']; ?></td>
             <td><?php echo $noticia['jornada']; ?></td>
             <td><?php echo $noticia['fecha_publicacion']; ?></td>
             <td>
+
+                <!--Si clicamos aquí editamos la noticia-->
                 <a href="editNews.php?id=<?php echo $noticia['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
+
+                <!--Si clicamos aquí eliminamos la noticia-->
                 <a href="deleteNews.php?id=<?php echo $noticia['id']; ?>" class="btn btn-sm btn-danger">Eliminar</a>
             </td>
         </tr>
