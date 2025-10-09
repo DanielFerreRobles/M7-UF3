@@ -44,12 +44,8 @@ $resultLiga = $stmtLiga->get_result();
 $liga = $resultLiga->fetch_assoc();
 $stmtLiga->close();
 
-// Juntando las tablas "NOTICIAS" y "USUARIOS", para obtener todas las noticias de la liga y jornada seleccionadas junto con el nombre del usuario que escribió cada noticia
-$stmtNoticias = $mysqli->prepare("SELECT NOTICIAS.id, NOTICIAS.titulo, NOTICIAS.subtitulo, NOTICIAS.contenido, NOTICIAS.foto, NOTICIAS.fecha_publicacion, USUARIOS.nombre_usuario 
-    FROM NOTICIAS JOIN USUARIOS
-    ON NOTICIAS.user_id = USUARIOS.id 
-    WHERE NOTICIAS.liga_id = ? AND NOTICIAS.jornada = ? 
-    ORDER BY NOTICIAS.id DESC");
+// Obtenemos todas las noticias de la liga y jornada seleccionadas
+$stmtNoticias = $mysqli->prepare("SELECT id, titulo, subtitulo, contenido, foto, fecha_publicacion FROM NOTICIAS WHERE liga_id = ? AND jornada = ? ORDER BY id DESC");
 $stmtNoticias->bind_param("ii", $liga_id, $jornada);
 $stmtNoticias->execute();
 $resultNoticias = $stmtNoticias->get_result();
@@ -108,8 +104,7 @@ if (!$noticias) {
                     <h5 class="text-muted"><?php echo $noticia['subtitulo']; ?></h5>
                     <p><?php echo $noticia['contenido']; ?></p>
                     <p class="text-muted small">
-                        Publicado por <?php echo $noticia['nombre_usuario']; ?>
-                        el <?php echo $noticia['fecha_publicacion']; ?>
+                       publicado el <?php echo $noticia['fecha_publicacion']; ?>
                     </p>
 
                     <!-- Formulario de comentario -->
