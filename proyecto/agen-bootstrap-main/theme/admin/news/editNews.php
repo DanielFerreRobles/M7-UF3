@@ -35,13 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contenido = $_POST['contenido'];
     $liga_id = $_POST['liga_id'];
     $jornada = $_POST['jornada'];
-    $competicion = $_POST['competicion'] ?? '';
+    $competicion = $_POST['competicion'];
     $fecha_publicacion = $_POST['fecha_publicacion'] ?: date('Y-m-d H:i:s');
 
     // Actualizamos la info con el UPDATE
     $stmt = $mysqli->prepare("UPDATE NOTICIAS SET titulo=?, foto=?, subtitulo=?, contenido=?, liga_id=?, jornada=?, competicion=?, fecha_publicacion=? WHERE id=?");
-    $stmt->bind_param("ssssiiisi", $titulo, $foto, $subtitulo, $contenido, $liga_id, $jornada, $competicion, $fecha_publicacion, $noticia_id);
-
+    $stmt->bind_param("ssssisssi", $titulo, $foto, $subtitulo, $contenido, $liga_id, $jornada, $competicion, $fecha_publicacion, $noticia_id);
     // Ejecutamos UPDATE
     $stmt->execute();
 
@@ -99,15 +98,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <textarea name="contenido" class="form-control mb-2" rows="4" required><?php echo $noticia['contenido']; ?></textarea>
 
     <!-- Liga -->
+    <!-- Menú desplegable para elegir la liga -->
     <select name="liga_id" class="form-select mb-2" required>
+        <!-- Primera opción: mensaje inicial, sin valor -->
         <option value="">Selecciona una liga</option>
+
+        <!-- Creamos una opción por cada liga que tenemos en la base de datos -->
         <?php foreach ($ligas as $liga): ?>
-            <option value="<?php echo $liga['id']; ?>" <?php if ($liga['id'] == $noticia['liga_id']) echo 'selected'; ?>>
+            <!-- Guardamos el ID de la liga como valor y seleccionamos la liga que ya tiene la noticia -->
+            <option 
+                value="<?php echo $liga['id']; ?>" 
+                <?php if ($liga['id'] == $noticia['liga_id']) echo 'selected'; ?>
+            >
+                <!-- Mostramos el nombre de la liga al usuario -->
                 <?php echo $liga['nombre']; ?>
             </option>
         <?php endforeach; ?>
     </select>
-
+    
     <!-- Jornada -->
     <select name="jornada" class="form-select mb-2" required>
         <option value="">Selecciona la jornada</option>
