@@ -8,7 +8,7 @@ if (!isset($_GET['liga_id'])) {
     exit;
 }
 
-// Si recibimos id de liga, SI podremos ver las noticias correspondientes
+// Si recibimos id de liga, SI podremos ver las noticias correspondientes, guardamos su id en la variable "liga_id"
 $liga_id = $_GET['liga_id'];
 
 // Si recibimos correctamente el número de la jornada que quiere ver el usuario, la guardamos en una variable llamada "jornada"
