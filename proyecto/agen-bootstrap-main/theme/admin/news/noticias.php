@@ -44,15 +44,22 @@ $resultLiga = $stmtLiga->get_result();
 $liga = $resultLiga->fetch_assoc();
 $stmtLiga->close();
 
-
-$stmtNoticias = $mysqli->prepare("SELECT n.*, u.nombre_usuario AS autor FROM NOTICIAS n JOIN USUARIOS u ON n.user_id=u.id WHERE n.liga_id=? AND n.jornada=? ORDER BY n.id DESC");
+//Juntando las tablas "NOTICIAS" y "USUARIOS",para obtener todas las noticias de la liga y jornada seleccionadas junto con el nombre del usuario que escribió cada noticia
+$stmtNoticias = $mysqli->prepare("SELECT NOTICIAS.id, NOTICIAS.titulo, NOTICIAS.subtitulo, NOTICIAS.contenido, NOTICIAS.foto, NOTICIAS.fecha_publicacion, USUARIOS.nombre_usuario 
+    FROM NOTICIAS JOIN USUARIOS
+    ON NOTICIAS.user_id = USUARIOS.id 
+    WHERE NOTICIAS.liga_id = ? AND NOTICIAS.jornada = ? 
+    ORDER BY NOTICIAS.id DESC");
 $stmtNoticias->bind_param("ii", $liga_id, $jornada);
 $stmtNoticias->execute();
 $resultNoticias = $stmtNoticias->get_result();
 $noticias = $resultNoticias->fetch_all(MYSQLI_ASSOC);
 $stmtNoticias->close();
 
-if (!$noticias) $noticias = [];
+ // Si no hay noticias, ponemos array vacío
+if (!$noticias) {
+    $noticias = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -64,36 +71,50 @@ if (!$noticias) $noticias = [];
 </head>
 <body>
 
-<!-- Fondo con la imagen de la liga -->
-<div class="position-relative vh-100" style="background-image: url('<?php echo $liga['foto']; ?>'); background-size: cover; background-position: center;">
+<!-- Fondo de la liga -->
+<div class="position-relative vh-100" 
+     style="background-image: url('<?php echo $liga['foto']; ?>'); background-size: cover; background-position: center;">
+    
+    <!-- Capa oscura encima del fondo -->
     <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50"></div>
 
-    <div class="container position-relative py-5 text-white" style="z-index: 1; overflow-y: auto; max-height: 100vh;">
+    <div class="container position-relative py-5 text-white" 
+         style="z-index: 1; overflow-y: auto; max-height: 100vh;">
+
+        <!-- Nombre de la liga -->
         <h1 class="text-center mb-4"><?php echo $liga['nombre']; ?></h1>
 
-        <!-- Selector de jornada (POST) -->
+        <!-- Seleccionamos jornada -->
         <form method="POST" class="mb-4 d-flex align-items-center gap-2">
             <input type="hidden" name="liga_id" value="<?php echo $liga_id; ?>">
             <label for="jornada" class="form-label mb-0">Jornada:</label>
             <select name="jornada" id="jornada" class="form-select w-auto">
-                <?php for ($i=1; $i<=38; $i++): ?>
-                    <option value="<?php echo $i; ?>" <?php if($i==$jornada) echo 'selected'; ?>><?php echo $i; ?></option>
+                <?php for ($i = 1; $i <= 38; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if ($i == $jornada) echo 'selected'; ?>>
+                        <?php echo $i; ?>
+                    </option>
                 <?php endfor; ?>
             </select>
             <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
         </form>
 
-        <?php if (count($noticias) > 0): ?>
-            <?php foreach ($noticias as $noticia): ?>
+        <!--Mostramos las noticias -->
+        <?php foreach ($noticias as $noticia): ?>
             <div class="card mb-4">
-                <?php if (!empty($noticia['foto'])): ?>
-                    <img src="<?php echo htmlspecialchars($noticia['foto']); ?>" class="img-fluid rounded" alt="Imagen noticia">
+
+                <!-- Imagen de la noticia -->
+                <?php if ($noticia['foto']): ?>
+                    <img src="<?php echo $noticia['foto']; ?>" class="img-fluid rounded" alt="Imagen noticia">
                 <?php endif; ?>
+
                 <div class="card-body text-dark">
-                    <h3><?php echo htmlspecialchars($noticia['titulo']); ?></h3>
-                    <h5 class="text-muted"><?php echo htmlspecialchars($noticia['subtitulo']); ?></h5>
-                    <p><?php echo nl2br(htmlspecialchars($noticia['contenido'])); ?></p>
-                    <p class="text-muted small">Publicado por <?php echo htmlspecialchars($noticia['autor']); ?> el <?php echo $noticia['fecha_publicacion']; ?></p>
+                    <h3><?php echo $noticia['titulo']; ?></h3>
+                    <h5 class="text-muted"><?php echo $noticia['subtitulo']; ?></h5>
+                    <p><?php echo $noticia['contenido']; ?></p>
+                    <p class="text-muted small">
+                        Publicado por <?php echo $noticia['nombre_usuario']; ?>
+                        el <?php echo $noticia['fecha_publicacion']; ?>
+                    </p>
 
                     <!-- Formulario de comentario -->
                     <form method="POST" class="mt-3">
@@ -106,41 +127,24 @@ if (!$noticias) $noticias = [];
                         <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                     </form>
 
-                    <!-- Comentarios existentes -->
-                    <?php
-                    $stmtComentarios = $mysqli->prepare("
-                        SELECT c.*, u.nombre_usuario 
-                        FROM COMENTARIOS c 
-                        JOIN USUARIOS u ON c.usuario_id=u.id 
-                        WHERE c.noticia_id=? 
-                        ORDER BY c.id ASC
-                    ");
-                    $stmtComentarios->bind_param("i", $noticia['id']);
-                    $stmtComentarios->execute();
-                    $resultComentarios = $stmtComentarios->get_result();
-                    $comentarios = $resultComentarios->fetch_all(MYSQLI_ASSOC);
-                    $stmtComentarios->close();
-                    ?>
-
-                    <?php if ($comentarios): ?>
-                    <div class="mt-3">
-                        <h6>Comentarios:</h6>
-                        <?php foreach ($comentarios as $c): ?>
+                    <!-- Mostramos los comentarios, quien los ha escrito y cuando -->
+                    <?php foreach ($comentarios as $comentario): ?>
                         <div class="border p-2 mb-2 rounded bg-light text-dark">
-                            <strong><?php echo htmlspecialchars($c['nombre_usuario']); ?></strong> 
-                            <span class="text-muted small"> - <?php echo $c['fecha_comentario']; ?></span>
-                            <p class="mb-0"><?php echo nl2br(htmlspecialchars($c['contenido'])); ?></p>
+                            <strong><?php echo $comentario['nombre_usuario']; ?></strong>
+                            <span class="text-muted small"> - <?php echo $comentario['fecha_comentario']; ?></span>
+                            <p class="mb-0"><?php echo $comentario['contenido']; ?></p>
                         </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <div class="alert alert-info text-dark">No hay noticias disponibles para esta liga y jornada.</div>
+        <?php endforeach; ?>
+
+        <!-- Si no hay noticias mostramos esta frase -->
+        <?php if (empty($noticias)): ?>
+            <div class="alert alert-info text-dark">No hay noticias disponibles.</div>
         <?php endif; ?>
 
+        <!-- Por si nos equivocamos, clicando aqií volveremos a la página prinicipal para seleccionar una liga -->
         <a href="../../index.php" class="btn btn-secondary">Volver</a>
     </div>
 </div>
