@@ -69,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <select class="form-select" name="rol" id="rol" required>
                     <option value="">Selecciona un rol</option>
                     <option value="usuario">Usuario</option>
-                    <option value="admin">Administrador</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary w-100">Registrarse</button>
@@ -79,6 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="mt-3 text-center text-dark">
             ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
         </p>
+
+        <a href="index.php" class="btn btn-secondary mb-4">← Volver al inicio</a>
     </div>
 </div>
 

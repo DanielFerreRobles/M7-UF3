@@ -10,12 +10,6 @@ if (!isset($_GET['id'])) {
 //Si recibimos correctamente el id del usuario que queremos eliminar, SI podremos eliminarlo. Guardamos el id en la variable "usuario_id"
 $usuario_id = $_GET['id'];
 
-// Evitar que un admin se elimine a sí mismo
-if ($usuario_id == $_SESSION['usuario_id']) {
-    header("Location: addUser.php");
-    exit;
-}
-
 // Ejecutar eliminación
 $stmt = $mysqli->prepare("DELETE FROM USUARIOS WHERE id=?");
 $stmt->bind_param("i", $usuario_id);

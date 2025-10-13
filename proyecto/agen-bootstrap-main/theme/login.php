@@ -66,6 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
             <!--Si no está registrado, puede registrarse clicando aquí-->
         <p class="text-center mt-3">¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a></p>
+
+        <a href="index.php" class="btn btn-secondary mb-4">← Volver al inicio</a>
+
     </div>
 </div>
 
