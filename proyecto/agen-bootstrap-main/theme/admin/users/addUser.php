@@ -41,6 +41,7 @@ $usuarios = $result->fetch_all(MYSQLI_ASSOC);
 
 <div class="container my-5">
     <h2 class="mb-4">Agregar Usuario</h2>
+    <a href="../../index.php" class="btn btn-secondary mb-4">← Volver al inicio</a>
     <!--Si hay error se mostrará en rojo-->
     <?php if (!empty($error)): ?>
         <div class="alert alert-danger"><?php echo $error; ?></div>

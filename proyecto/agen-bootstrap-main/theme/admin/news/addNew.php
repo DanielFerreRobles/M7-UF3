@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container mt-5">
 
 <h1 class="mb-4">Añadir Noticia</h1>
+<a href="../../index.php" class="btn btn-secondary mb-4">← Volver al inicio</a>
 
 <!--Enviamos por POST la info del formulario. Estos datos se reciben arriba y hacemos el INSERT INTO !-->
 <form method="POST" class="mb-5">
