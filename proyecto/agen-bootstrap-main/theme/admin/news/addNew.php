@@ -24,15 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jornada = $_POST['jornada'];
     $competicion = $_POST['competicion'] ?? '';
     $fecha_publicacion = $_POST['fecha_publicacion'] ?: date('Y-m-d H:i:s');
-    $user_id = $_SESSION['user_id'];
 
     // Inserto los datos recibidos del formulario en mi tabla "NOTICIAS"
-    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, user_id, competicion, fecha_publicacion, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO NOTICIAS (titulo, foto, subtitulo, contenido, liga_id, competicion, fecha_publicacion, jornada) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     
     // Si la consulta se preparó bien
     if ($stmt) {
         // Inserto la info de mis variables en la consulta
-        $stmt->bind_param("ssssisssi", $titulo, $foto, $subtitulo, $contenido, $liga_id, $user_id, $competicion, $fecha_publicacion, $jornada);
+        $stmt->bind_param("sssssssi", $titulo, $foto, $subtitulo, $contenido, $liga_id, $competicion, $fecha_publicacion, $jornada);
         
         // Ejecuto la consulta
         if ($stmt->execute()) {
