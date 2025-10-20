@@ -105,7 +105,7 @@ $usuarios = $result->fetch_all(MYSQLI_ASSOC);
                         <a href="editUser.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
                         
                         <!--Si queremos eliminar un usuario, clicando aquí nos llevará a poder eliminarlo, pasandole el id del usuario correspondiente !-->
-                        <a href="deleteUser.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">Eliminar</a>
+                        <a href="deleteUser.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger">Eliminar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
