@@ -106,8 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Creamos una opción por cada liga que tenemos en la base de datos -->
         <?php foreach ($ligas as $liga): ?>
             <!-- Guardamos el ID de la liga como valor y seleccionamos la liga que ya tiene la noticia -->
-            <option 
-                value="<?php echo $liga['id']; ?>" 
+            <option value="<?php echo $liga['id']; ?>" 
                 <?php if ($liga['id'] == $noticia['liga_id']) echo 'selected'; ?>
             >
                 <!-- Mostramos el nombre de la liga al usuario -->
